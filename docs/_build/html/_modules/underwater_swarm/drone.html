@@ -1,0 +1,388 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>underwater_swarm.drone &mdash; EssaimDrones 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EssaimDrones
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EssaimDrones</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EssaimDrones</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">underwater_swarm.drone</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for underwater_swarm.drone</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Defines the Drone agent class.</span>
+
+<span class="sd">This module contains the `Drone` class, which represents an individual agent</span>
+<span class="sd">in the swarm simulation. It handles physics integration, force application,</span>
+<span class="sd">and state management for various behaviors.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.safety</span><span class="w"> </span><span class="kn">import</span> <span class="n">SafetyMonitor</span>
+
+<div class="viewcode-block" id="Drone">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.drone.Drone">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Drone</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a single underwater drone agent.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id (int): Unique identifier for the drone.</span>
+<span class="sd">        position (np.ndarray): 3D position vector [x, y, z].</span>
+<span class="sd">        velocity (np.ndarray): 3D velocity vector [vx, vy, vz].</span>
+<span class="sd">        acceleration (np.ndarray): 3D acceleration vector [ax, ay, az].</span>
+<span class="sd">        mass (float): Mass of the drone in kg.</span>
+<span class="sd">        drag_factor (float): Multiplier for drag calculation (used for drafting).</span>
+<span class="sd">        pso_best_position (np.ndarray): Best known position for PSO.</span>
+<span class="sd">        pso_best_score (float): Best known score for PSO.</span>
+<span class="sd">        flash_timer (float): Timer for flash expansion behavior.</span>
+<span class="sd">        flash_direction (np.ndarray): Direction vector for flash expansion.</span>
+<span class="sd">        safety (SafetyMonitor): Safety module for the drone.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">start_pos</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">start_pos</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">MASS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drag_factor</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c1"># Multiplier for drag (used for drafting)</span>
+        
+        <span class="c1"># PSO State</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pso_best_position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pso_best_score</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        
+        <span class="c1"># Flash Expansion State</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flash_timer</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flash_direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        
+        <span class="c1"># Safety Module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">safety</span> <span class="o">=</span> <span class="n">SafetyMonitor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Drone.update">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.drone.Drone.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the drone&#39;s physics state using Euler integration.</span>
+
+<span class="sd">        Calculates the new velocity and position based on accumulated forces</span>
+<span class="sd">        (acceleration), applies speed limits, and resets the acceleration</span>
+<span class="sd">        accumulator for the next step.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dt (float): Time step in seconds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Limit force</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_FORCE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span><span class="p">))</span> <span class="o">*</span> <span class="n">MAX_FORCE</span>
+
+        <span class="c1"># F = ma -&gt; a = F/m</span>
+        <span class="c1"># We treat self.acceleration as &quot;Force applied&quot; in the flocking step, </span>
+        <span class="c1"># so actual acceleration is Force / Mass.</span>
+        <span class="n">actual_accel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">+=</span> <span class="n">actual_accel</span> <span class="o">*</span> <span class="n">dt</span>
+        
+        <span class="c1"># Limit speed</span>
+        <span class="n">speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">velocity</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">speed</span> <span class="o">&gt;</span> <span class="n">MAX_SPEED</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">/</span> <span class="n">speed</span><span class="p">)</span> <span class="o">*</span> <span class="n">MAX_SPEED</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">*</span> <span class="n">dt</span>
+        
+        <span class="c1"># Reset acceleration (force accumulator) for next step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drag_factor</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c1"># Reset drafting status</span></div>
+
+
+<div class="viewcode-block" id="Drone.apply_force">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.drone.Drone.apply_force">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_force</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies a force vector to the drone.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            force (np.ndarray): 3D force vector to apply.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span> <span class="o">+=</span> <span class="n">force</span></div>
+
+
+<div class="viewcode-block" id="Drone.apply_drag">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.drone.Drone.apply_drag">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_drag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fluid_velocity</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies hydrodynamic drag force based on relative velocity.</span>
+
+<span class="sd">        Calculates drag using a simplified quadratic drag equation:</span>
+<span class="sd">        F_d = -0.5 * rho * Cd * A * v^2 * unit_vector(v)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fluid_velocity (np.ndarray): Velocity vector of the surrounding fluid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">relative_vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">-</span> <span class="n">fluid_velocity</span>
+        <span class="n">speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">relative_vel</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">speed</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Quadratic drag simplified</span>
+            <span class="n">drag_mag</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">WATER_DENSITY</span> <span class="o">*</span> <span class="p">(</span><span class="n">DRAG_COEFF</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">drag_factor</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="p">(</span><span class="n">speed</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> 
+            <span class="c1"># 0.01 is arbitrary reference area</span>
+            
+            <span class="n">drag_force</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span><span class="n">relative_vel</span> <span class="o">/</span> <span class="n">speed</span><span class="p">)</span> <span class="o">*</span> <span class="n">drag_mag</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">apply_force</span><span class="p">(</span><span class="n">drag_force</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Drone.calculate_forces">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.drone.Drone.calculate_forces">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_forces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">neighbors</span><span class="p">,</span> <span class="n">environment</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">friends</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates the net force based on local perception and current mode.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            neighbors (list[Drone]): List of nearby drones.</span>
+<span class="sd">            environment (Environment): The simulation environment.</span>
+<span class="sd">            targets (list[np.ndarray]): List of enemy/target positions.</span>
+<span class="sd">            friends (list[np.ndarray]): List of friendly unit positions.</span>
+<span class="sd">            mode (SwarmMode): Current behavior mode.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get params for current mode</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">MODE_PARAMS</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span>
+        <span class="n">w_sep</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;sep&quot;</span><span class="p">]</span>
+        <span class="n">w_ali</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;ali&quot;</span><span class="p">]</span>
+        <span class="n">w_coh</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;coh&quot;</span><span class="p">]</span>
+        <span class="n">w_target</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span>
+        
+        <span class="c1"># 1. Perception (Neighbors processed by caller for efficiency or here?)</span>
+        <span class="c1"># Caller passes &#39;neighbors&#39; list which are already filtered by distance ideally, </span>
+        <span class="c1"># but here we might receive all and filter. Let&#39;s assume caller gives us relevant ones </span>
+        <span class="c1"># or we filter here. For distributed sim, we filter here.</span>
+        
+        <span class="c1"># Filter neighbors by range</span>
+        <span class="n">nearby_drones</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="k">continue</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="n">PERCEPTION_RADIUS</span><span class="p">:</span>
+                <span class="n">nearby_drones</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        
+        <span class="c1"># 2. Bio-Inspired Forces</span>
+        <span class="n">f_sep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">f_ali</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">f_coh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        
+        <span class="c1"># --- FLASH EXPANSION LOGIC ---</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flash_timer</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">flash_timer</span> <span class="o">-=</span> <span class="n">DT</span> <span class="c1"># Using global DT</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">apply_force</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flash_direction</span> <span class="o">*</span> <span class="n">MAX_FORCE</span> <span class="o">*</span> <span class="mf">2.0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">*=</span> <span class="mf">0.95</span>
+            <span class="k">return</span> <span class="c1"># Skip other forces</span>
+        
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">FLASH_EXPANSION</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">!=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">ATTACK</span><span class="p">):</span>
+             <span class="c1"># Trigger logic (simplified)</span>
+             <span class="n">dists_to_enemies</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">]</span>
+             <span class="k">if</span> <span class="n">dists_to_enemies</span> <span class="ow">and</span> <span class="nb">min</span><span class="p">(</span><span class="n">dists_to_enemies</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">FLASH_TRIGGER_DIST</span><span class="p">:</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">flash_timer</span> <span class="o">=</span> <span class="n">FLASH_DURATION</span>
+                 <span class="n">nearest_enemy</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dists_to_enemies</span><span class="p">)]</span>
+                 <span class="n">escape_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="n">nearest_enemy</span>
+                 <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">escape_dir</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">escape_dir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">flash_direction</span> <span class="o">=</span> <span class="n">escape_dir</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">escape_dir</span><span class="p">)</span>
+                 <span class="k">return</span>
+        <span class="c1"># -----------------------------</span>
+
+        <span class="k">if</span> <span class="n">nearby_drones</span><span class="p">:</span>
+            <span class="c1"># Separation</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nearby_drones</span><span class="p">:</span>
+                <span class="n">diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="n">n</span><span class="o">.</span><span class="n">position</span>
+                <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="mf">0.1</span><span class="p">:</span> <span class="n">dist</span> <span class="o">=</span> <span class="mf">0.1</span>
+                <span class="n">f_sep</span> <span class="o">+=</span> <span class="p">(</span><span class="n">diff</span> <span class="o">/</span> <span class="n">dist</span><span class="p">)</span> <span class="o">/</span> <span class="n">dist</span> <span class="c1"># Weight by inverse distance</span>
+            
+            <span class="c1"># Alignment</span>
+            <span class="n">avg_vel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">n</span><span class="o">.</span><span class="n">velocity</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nearby_drones</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">f_ali</span> <span class="o">=</span> <span class="n">avg_vel</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span>
+            
+            <span class="c1"># Cohesion</span>
+            <span class="n">avg_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">n</span><span class="o">.</span><span class="n">position</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nearby_drones</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">f_coh</span> <span class="o">=</span> <span class="n">avg_pos</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span>
+            
+            <span class="c1"># Drafting Logic</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nearby_drones</span><span class="p">:</span>
+                <span class="n">vec_n_to_me</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="n">n</span><span class="o">.</span><span class="n">position</span>
+                <span class="n">dist_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vec_n_to_me</span><span class="p">)</span>
+                <span class="n">n_speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">velocity</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">n_speed</span> <span class="o">&gt;</span> <span class="mf">0.1</span> <span class="ow">and</span> <span class="n">dist_n</span> <span class="o">&lt;</span> <span class="mf">5.0</span><span class="p">:</span>
+                    <span class="n">n_dir</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">velocity</span> <span class="o">/</span> <span class="n">n_speed</span>
+                    <span class="n">alignment</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vec_n_to_me</span> <span class="o">/</span> <span class="n">dist_n</span><span class="p">,</span> <span class="n">n_dir</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">alignment</span> <span class="o">&gt;</span> <span class="mf">0.8</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">drag_factor</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">DRAFTING_BONUS</span>
+                        <span class="k">break</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">v</span> <span class="o">/</span> <span class="n">n</span> <span class="o">*</span> <span class="n">MAX_FORCE</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">v</span>
+
+        <span class="n">f_sep</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">f_sep</span><span class="p">)</span> <span class="o">*</span> <span class="n">w_sep</span>
+        <span class="n">f_ali</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">f_ali</span><span class="p">)</span> <span class="o">*</span> <span class="n">w_ali</span>
+        <span class="n">f_coh</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">f_coh</span><span class="p">)</span> <span class="o">*</span> <span class="n">w_coh</span>
+        
+        <span class="c1"># 3. Target / Mission Logic</span>
+        <span class="n">f_target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">goal_point</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">is_encircle</span> <span class="o">=</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">ENCIRCLE</span> <span class="ow">or</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">PREDATOR_PACK</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">DEFEND</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">friends</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">dists</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">f</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">friends</span><span class="p">]</span>
+            <span class="n">goal_point</span> <span class="o">=</span> <span class="n">friends</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dists</span><span class="p">)]</span>
+            
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">SHIELD</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">friends</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+             <span class="n">dists</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">f</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">friends</span><span class="p">]</span>
+             <span class="n">center_point</span> <span class="o">=</span> <span class="n">friends</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dists</span><span class="p">)]</span>
+             <span class="n">to_center</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="n">center_point</span>
+             <span class="n">dist_center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">to_center</span><span class="p">)</span>
+             <span class="n">DESIRED_RADIUS</span> <span class="o">=</span> <span class="mf">15.0</span>
+             <span class="n">f_radial</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">center_point</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">dist_center</span> <span class="o">-</span> <span class="n">DESIRED_RADIUS</span><span class="p">)</span>
+             <span class="n">up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+             <span class="n">tangent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">to_center</span><span class="p">,</span> <span class="n">up</span><span class="p">)</span>
+             <span class="n">f_tangent</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">tangent</span><span class="p">)</span> <span class="o">*</span> <span class="n">MAX_FORCE</span>
+             <span class="n">angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">to_center</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">to_center</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+             <span class="n">target_z</span> <span class="o">=</span> <span class="n">center_point</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mf">5.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span> <span class="o">*</span> <span class="mf">3.0</span><span class="p">)</span>
+             <span class="n">f_vertical</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">target_z</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span> <span class="o">*</span> <span class="mf">5.0</span>
+             <span class="n">f_target</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_radial</span> <span class="o">+</span> <span class="n">f_tangent</span> <span class="o">+</span> <span class="n">f_vertical</span><span class="p">)</span> <span class="o">*</span> <span class="n">w_target</span>
+             
+        <span class="k">elif</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">ATTACK</span> <span class="ow">or</span> <span class="n">is_encircle</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">dists</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">]</span>
+            <span class="n">goal_point</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dists</span><span class="p">)]</span>
+            
+        <span class="k">elif</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">PATROL</span> <span class="ow">or</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">SCHOOLING</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+             <span class="n">dists</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">]</span>
+             <span class="n">goal_point</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dists</span><span class="p">)]</span>
+             
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">SEARCH</span> <span class="ow">or</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">EXPLORATION</span><span class="p">:</span>
+            <span class="c1"># PSO / Exploration Logic</span>
+            <span class="n">search_target</span> <span class="o">=</span> <span class="n">BOUNDS</span> <span class="o">/</span> <span class="mf">2.0</span>
+            <span class="n">current_fitness</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="n">search_target</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">current_fitness</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">pso_best_score</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pso_best_score</span> <span class="o">=</span> <span class="n">current_fitness</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pso_best_position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+            
+            <span class="n">best_neighbor_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pso_best_position</span>
+            <span class="n">best_neighbor_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pso_best_score</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nearby_drones</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">pso_best_score</span> <span class="o">&gt;</span> <span class="n">best_neighbor_score</span><span class="p">:</span>
+                    <span class="n">best_neighbor_score</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">pso_best_score</span>
+                    <span class="n">best_neighbor_pos</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">pso_best_position</span>
+            
+            <span class="n">r1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+            <span class="n">r2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+            <span class="n">v_inertia</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">*</span> <span class="n">PSO_INERTIA</span>
+            <span class="n">v_cognitive</span> <span class="o">=</span> <span class="n">PSO_COGNITIVE</span> <span class="o">*</span> <span class="n">r1</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pso_best_position</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+            <span class="n">v_social</span> <span class="o">=</span> <span class="n">PSO_SOCIAL</span> <span class="o">*</span> <span class="n">r2</span> <span class="o">*</span> <span class="p">(</span><span class="n">best_neighbor_pos</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+            <span class="n">new_velocity</span> <span class="o">=</span> <span class="n">v_inertia</span> <span class="o">+</span> <span class="n">v_cognitive</span> <span class="o">+</span> <span class="n">v_social</span>
+            <span class="n">f_target</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_velocity</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span><span class="p">)</span> <span class="o">*</span> <span class="n">w_target</span>
+
+        <span class="k">if</span> <span class="n">goal_point</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">!=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">SHIELD</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_encircle</span><span class="p">:</span>
+                <span class="n">to_target</span> <span class="o">=</span> <span class="n">goal_point</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span>
+                <span class="n">dist_target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">to_target</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dist_target</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">DESIRED_RADIUS</span> <span class="o">=</span> <span class="mf">25.0</span>
+                    <span class="n">f_radial</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">to_target</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">dist_target</span> <span class="o">-</span> <span class="n">DESIRED_RADIUS</span><span class="p">)</span>
+                    <span class="n">up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                    <span class="n">tangent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">to_target</span><span class="p">,</span> <span class="n">up</span><span class="p">)</span>
+                    <span class="n">f_tangent</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">tangent</span><span class="p">)</span> <span class="o">*</span> <span class="n">MAX_FORCE</span>
+                    <span class="n">f_target</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_radial</span> <span class="o">+</span> <span class="n">f_tangent</span><span class="p">)</span> <span class="o">*</span> <span class="n">w_target</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">f_target</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">goal_point</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="o">*</span> <span class="n">w_target</span>
+
+        <span class="c1"># 4. Obstacle Avoidance &amp; Safety</span>
+        <span class="n">f_avoid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">safety</span><span class="o">.</span><span class="n">check_collisions</span><span class="p">(</span><span class="n">nearby_drones</span><span class="p">,</span> <span class="n">environment</span><span class="o">.</span><span class="n">obstacles</span><span class="p">)</span>
+        <span class="n">f_bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">safety</span><span class="o">.</span><span class="n">check_geofence</span><span class="p">()</span>
+        
+        <span class="c1"># 5. Apply Total Force</span>
+        <span class="n">total_force</span> <span class="o">=</span> <span class="n">f_sep</span> <span class="o">+</span> <span class="n">f_ali</span> <span class="o">+</span> <span class="n">f_coh</span> <span class="o">+</span> <span class="n">f_target</span> <span class="o">+</span> <span class="n">f_avoid</span> <span class="o">+</span> <span class="n">f_bounds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_force</span><span class="p">(</span><span class="n">total_force</span><span class="p">)</span></div>
+</div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, CDagorn.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

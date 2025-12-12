@@ -1,0 +1,5 @@
+numpy
+matplotlib
+pytest
+sphinx
+sphinx_rtd_theme
