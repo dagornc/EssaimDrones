@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>underwater_swarm.swarm &#8212; EssaimDrones 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for underwater_swarm.swarm</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Implements the swarm intelligence logic.</span>
+
+<span class="sd">This module contains the ``SwarmController`` which acts as the high-level</span>
+<span class="sd">coordinator (Swarm Layer). It delegates the behavioral vectorized logic</span>
+<span class="sd">to `behaviors.py` while managing global states and mode</span>
+<span class="sd">transitions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">cdist</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">SwarmMode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.behaviors</span><span class="w"> </span><span class="kn">import</span> <span class="n">behavior_factory</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.drone</span><span class="w"> </span><span class="kn">import</span> <span class="n">Drone</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.environment</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span>
+
+
+<div class="viewcode-block" id="SwarmController">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.swarm.SwarmController">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SwarmController</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Manages the swarm behavior by coordinating individual drones.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SwarmController.update">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.swarm.SwarmController.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">drones</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Drone</span><span class="p">],</span>
+        <span class="n">environment</span><span class="p">:</span> <span class="n">Environment</span><span class="p">,</span>
+        <span class="n">targets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">friends</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">SwarmMode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">PATROL</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates all drones in the swarm.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            drones: List of drones to update.</span>
+<span class="sd">            environment: The simulation environment.</span>
+<span class="sd">            targets: List of enemy/target positions.</span>
+<span class="sd">            friends: List of friendly unit positions.</span>
+<span class="sd">            mode: Current behavior mode.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">drones</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># 1. Gather global state</span>
+        <span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d</span><span class="o">.</span><span class="n">position</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">drones</span><span class="p">])</span>
+        <span class="n">velocities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d</span><span class="o">.</span><span class="n">velocity</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">drones</span><span class="p">])</span>
+
+        <span class="c1"># 2. Compute Distance Matrix (Vectorized O(N^2) in compiled C)</span>
+        <span class="n">dist_matrix</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">positions</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">dist_matrix</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+
+        <span class="c1"># 3. Handle Flash Expansion (Global survival trait)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">FLASH_TRIGGER_DIST</span><span class="p">,</span> <span class="n">FLASH_DURATION</span><span class="p">,</span> <span class="n">DT</span><span class="p">,</span> <span class="n">MAX_FORCE</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">ATTACK</span> <span class="ow">and</span> <span class="n">targets</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">drone</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">drones</span><span class="p">):</span>
+                <span class="n">dists_to_enemies</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">drone</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">dists_to_enemies</span> <span class="ow">and</span> <span class="nb">min</span><span class="p">(</span><span class="n">dists_to_enemies</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">FLASH_TRIGGER_DIST</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">drone</span><span class="o">.</span><span class="n">flash_timer</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">drone</span><span class="o">.</span><span class="n">flash_timer</span> <span class="o">=</span> <span class="n">FLASH_DURATION</span>
+                        <span class="n">nearest_enemy</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dists_to_enemies</span><span class="p">)]</span>
+                        <span class="n">escape_dir</span> <span class="o">=</span> <span class="n">drone</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="n">nearest_enemy</span>
+                        <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">escape_dir</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">norm</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">escape_dir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+                            <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">escape_dir</span><span class="p">)</span>
+                        <span class="n">drone</span><span class="o">.</span><span class="n">flash_direction</span> <span class="o">=</span> <span class="n">escape_dir</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">norm</span><span class="p">,</span> <span class="mf">1e-9</span><span class="p">)</span>
+
+        <span class="c1"># 4. Strategy Pattern for Behaviors</span>
+        <span class="n">behavior</span> <span class="o">=</span> <span class="n">behavior_factory</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="n">behavior_forces</span> <span class="o">=</span> <span class="n">behavior</span><span class="o">.</span><span class="n">compute_forces</span><span class="p">(</span>
+            <span class="n">drones</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">velocities</span><span class="p">,</span> <span class="n">dist_matrix</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">friends</span><span class="p">,</span> <span class="n">mode</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 5. Apply forces back to local Drone objects</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">drone</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">drones</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">drone</span><span class="o">.</span><span class="n">flash_timer</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">drone</span><span class="o">.</span><span class="n">flash_timer</span> <span class="o">-=</span> <span class="n">DT</span>
+                <span class="n">drone</span><span class="o">.</span><span class="n">apply_force</span><span class="p">(</span><span class="n">drone</span><span class="o">.</span><span class="n">flash_direction</span> <span class="o">*</span> <span class="n">MAX_FORCE</span> <span class="o">*</span> <span class="mf">2.0</span><span class="p">)</span>
+                <span class="n">drone</span><span class="o">.</span><span class="n">velocity</span> <span class="o">*=</span> <span class="mf">0.95</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Evaluate individual safety and boundaries</span>
+            <span class="n">f_avoid</span> <span class="o">=</span> <span class="n">drone</span><span class="o">.</span><span class="n">safety</span><span class="o">.</span><span class="n">check_collisions</span><span class="p">(</span><span class="n">drones</span><span class="p">,</span> <span class="n">environment</span><span class="o">.</span><span class="n">obstacles</span><span class="p">)</span>
+            <span class="n">f_bounds</span> <span class="o">=</span> <span class="n">drone</span><span class="o">.</span><span class="n">safety</span><span class="o">.</span><span class="n">check_geofence</span><span class="p">()</span>
+
+            <span class="c1"># Sum forces and apply</span>
+            <span class="n">total_force</span> <span class="o">=</span> <span class="n">behavior_forces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">f_avoid</span> <span class="o">+</span> <span class="n">f_bounds</span>
+            <span class="n">drone</span><span class="o">.</span><span class="n">apply_force</span><span class="p">(</span><span class="n">total_force</span><span class="p">)</span>
+
+            <span class="c1"># Hydrodynamic Interactions</span>
+            <span class="n">local_flow</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="n">get_current</span><span class="p">(</span><span class="n">drone</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+            <span class="n">drone</span><span class="o">.</span><span class="n">apply_drag</span><span class="p">(</span><span class="n">local_flow</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">EssaimDrones</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Agent Antigravity.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.0.4</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

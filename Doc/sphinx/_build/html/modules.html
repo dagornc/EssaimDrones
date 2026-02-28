@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Backend &#8212; EssaimDrones 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="backend">
+<h1>Backend<a class="headerlink" href="#backend" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="agent.html">agent package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="agent.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent.html#agent-orchestrator-module">agent.orchestrator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent.html#module-agent">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">api package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#api-database-module">api.database module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-api.llm_config">api.llm_config module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#api.llm_config.LLMConfig"><code class="docutils literal notranslate"><span class="pre">LLMConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#api.llm_config.LLMConfig.providers"><code class="docutils literal notranslate"><span class="pre">LLMConfig.providers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#api.llm_config.LLMConfig.reload"><code class="docutils literal notranslate"><span class="pre">LLMConfig.reload()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#api.llm_config.get_llm_config"><code class="docutils literal notranslate"><span class="pre">get_llm_config()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#api-main-module">api.main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-api">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="underwater_swarm.html">underwater_swarm package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="underwater_swarm.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="underwater_swarm.html#module-underwater_swarm.behaviors">underwater_swarm.behaviors module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.behaviors.BehaviorStrategy"><code class="docutils literal notranslate"><span class="pre">BehaviorStrategy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.behaviors.BehaviorStrategy.compute_forces"><code class="docutils literal notranslate"><span class="pre">BehaviorStrategy.compute_forces()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.behaviors.BoidsBehavior"><code class="docutils literal notranslate"><span class="pre">BoidsBehavior</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.behaviors.BoidsBehavior.compute_forces"><code class="docutils literal notranslate"><span class="pre">BoidsBehavior.compute_forces()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.behaviors.PSOBehavior"><code class="docutils literal notranslate"><span class="pre">PSOBehavior</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.behaviors.PSOBehavior.compute_forces"><code class="docutils literal notranslate"><span class="pre">PSOBehavior.compute_forces()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.behaviors.SpecializedBehavior"><code class="docutils literal notranslate"><span class="pre">SpecializedBehavior</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.behaviors.SpecializedBehavior.compute_forces"><code class="docutils literal notranslate"><span class="pre">SpecializedBehavior.compute_forces()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.behaviors.behavior_factory"><code class="docutils literal notranslate"><span class="pre">behavior_factory()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="underwater_swarm.html#module-underwater_swarm.config">underwater_swarm.config module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.AppConfig"><code class="docutils literal notranslate"><span class="pre">AppConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.AppConfig.boids"><code class="docutils literal notranslate"><span class="pre">AppConfig.boids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.AppConfig.drone"><code class="docutils literal notranslate"><span class="pre">AppConfig.drone</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.AppConfig.environment"><code class="docutils literal notranslate"><span class="pre">AppConfig.environment</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.AppConfig.flash"><code class="docutils literal notranslate"><span class="pre">AppConfig.flash</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.AppConfig.load_from_yaml"><code class="docutils literal notranslate"><span class="pre">AppConfig.load_from_yaml()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.AppConfig.mode_params"><code class="docutils literal notranslate"><span class="pre">AppConfig.mode_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.AppConfig.physics"><code class="docutils literal notranslate"><span class="pre">AppConfig.physics</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.AppConfig.pso"><code class="docutils literal notranslate"><span class="pre">AppConfig.pso</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.AppConfig.simulation"><code class="docutils literal notranslate"><span class="pre">AppConfig.simulation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.BoidsConfig"><code class="docutils literal notranslate"><span class="pre">BoidsConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.BoidsConfig.alignment"><code class="docutils literal notranslate"><span class="pre">BoidsConfig.alignment</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.BoidsConfig.cohesion"><code class="docutils literal notranslate"><span class="pre">BoidsConfig.cohesion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.BoidsConfig.current"><code class="docutils literal notranslate"><span class="pre">BoidsConfig.current</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.BoidsConfig.separation"><code class="docutils literal notranslate"><span class="pre">BoidsConfig.separation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.BoidsConfig.target"><code class="docutils literal notranslate"><span class="pre">BoidsConfig.target</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.DroneConfig"><code class="docutils literal notranslate"><span class="pre">DroneConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.DroneConfig.crowding_radius"><code class="docutils literal notranslate"><span class="pre">DroneConfig.crowding_radius</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.DroneConfig.mass"><code class="docutils literal notranslate"><span class="pre">DroneConfig.mass</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.DroneConfig.max_force"><code class="docutils literal notranslate"><span class="pre">DroneConfig.max_force</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.DroneConfig.max_speed"><code class="docutils literal notranslate"><span class="pre">DroneConfig.max_speed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.DroneConfig.perception_radius"><code class="docutils literal notranslate"><span class="pre">DroneConfig.perception_radius</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.EnvironmentConfig"><code class="docutils literal notranslate"><span class="pre">EnvironmentConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.EnvironmentConfig.bounds"><code class="docutils literal notranslate"><span class="pre">EnvironmentConfig.bounds</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.FlashConfig"><code class="docutils literal notranslate"><span class="pre">FlashConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.FlashConfig.cooldown"><code class="docutils literal notranslate"><span class="pre">FlashConfig.cooldown</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.FlashConfig.duration"><code class="docutils literal notranslate"><span class="pre">FlashConfig.duration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.FlashConfig.trigger_dist"><code class="docutils literal notranslate"><span class="pre">FlashConfig.trigger_dist</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.ModeParamConfig"><code class="docutils literal notranslate"><span class="pre">ModeParamConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.ModeParamConfig.ali"><code class="docutils literal notranslate"><span class="pre">ModeParamConfig.ali</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.ModeParamConfig.coh"><code class="docutils literal notranslate"><span class="pre">ModeParamConfig.coh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.ModeParamConfig.sep"><code class="docutils literal notranslate"><span class="pre">ModeParamConfig.sep</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.ModeParamConfig.speed_mult"><code class="docutils literal notranslate"><span class="pre">ModeParamConfig.speed_mult</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.ModeParamConfig.target"><code class="docutils literal notranslate"><span class="pre">ModeParamConfig.target</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.PSOConfig"><code class="docutils literal notranslate"><span class="pre">PSOConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.PSOConfig.cognitive"><code class="docutils literal notranslate"><span class="pre">PSOConfig.cognitive</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.PSOConfig.inertia"><code class="docutils literal notranslate"><span class="pre">PSOConfig.inertia</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.PSOConfig.social"><code class="docutils literal notranslate"><span class="pre">PSOConfig.social</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.PhysicsConfig"><code class="docutils literal notranslate"><span class="pre">PhysicsConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.PhysicsConfig.drafting_bonus"><code class="docutils literal notranslate"><span class="pre">PhysicsConfig.drafting_bonus</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.PhysicsConfig.drag_coeff"><code class="docutils literal notranslate"><span class="pre">PhysicsConfig.drag_coeff</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.PhysicsConfig.water_density"><code class="docutils literal notranslate"><span class="pre">PhysicsConfig.water_density</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.SimulationConfig"><code class="docutils literal notranslate"><span class="pre">SimulationConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.SimulationConfig.dt"><code class="docutils literal notranslate"><span class="pre">SimulationConfig.dt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.SimulationConfig.steps"><code class="docutils literal notranslate"><span class="pre">SimulationConfig.steps</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.SwarmMode"><code class="docutils literal notranslate"><span class="pre">SwarmMode</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.SwarmMode.ATTACK"><code class="docutils literal notranslate"><span class="pre">SwarmMode.ATTACK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.SwarmMode.DEFEND"><code class="docutils literal notranslate"><span class="pre">SwarmMode.DEFEND</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.SwarmMode.ENCIRCLE"><code class="docutils literal notranslate"><span class="pre">SwarmMode.ENCIRCLE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.SwarmMode.EXPLORATION"><code class="docutils literal notranslate"><span class="pre">SwarmMode.EXPLORATION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.SwarmMode.FLASH_EXPANSION"><code class="docutils literal notranslate"><span class="pre">SwarmMode.FLASH_EXPANSION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.SwarmMode.PATROL"><code class="docutils literal notranslate"><span class="pre">SwarmMode.PATROL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.SwarmMode.PREDATOR_PACK"><code class="docutils literal notranslate"><span class="pre">SwarmMode.PREDATOR_PACK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.SwarmMode.SCHOOLING"><code class="docutils literal notranslate"><span class="pre">SwarmMode.SCHOOLING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.SwarmMode.SEARCH"><code class="docutils literal notranslate"><span class="pre">SwarmMode.SEARCH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.config.SwarmMode.SHIELD"><code class="docutils literal notranslate"><span class="pre">SwarmMode.SHIELD</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="underwater_swarm.html#module-underwater_swarm.drone">underwater_swarm.drone module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone"><code class="docutils literal notranslate"><span class="pre">Drone</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone.id"><code class="docutils literal notranslate"><span class="pre">Drone.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone.position"><code class="docutils literal notranslate"><span class="pre">Drone.position</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone.velocity"><code class="docutils literal notranslate"><span class="pre">Drone.velocity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone.acceleration"><code class="docutils literal notranslate"><span class="pre">Drone.acceleration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone.mass"><code class="docutils literal notranslate"><span class="pre">Drone.mass</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone.drag_factor"><code class="docutils literal notranslate"><span class="pre">Drone.drag_factor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone.pso_best_position"><code class="docutils literal notranslate"><span class="pre">Drone.pso_best_position</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone.pso_best_score"><code class="docutils literal notranslate"><span class="pre">Drone.pso_best_score</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone.flash_timer"><code class="docutils literal notranslate"><span class="pre">Drone.flash_timer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone.flash_direction"><code class="docutils literal notranslate"><span class="pre">Drone.flash_direction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone.safety"><code class="docutils literal notranslate"><span class="pre">Drone.safety</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone.apply_drag"><code class="docutils literal notranslate"><span class="pre">Drone.apply_drag()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone.apply_force"><code class="docutils literal notranslate"><span class="pre">Drone.apply_force()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.drone.Drone.update"><code class="docutils literal notranslate"><span class="pre">Drone.update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="underwater_swarm.html#module-underwater_swarm.environment">underwater_swarm.environment module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.environment.Environment"><code class="docutils literal notranslate"><span class="pre">Environment</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.environment.Environment.bounds"><code class="docutils literal notranslate"><span class="pre">Environment.bounds</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.environment.Environment.global_current"><code class="docutils literal notranslate"><span class="pre">Environment.global_current</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.environment.Environment.obstacles"><code class="docutils literal notranslate"><span class="pre">Environment.obstacles</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.environment.Environment.add_obstacle"><code class="docutils literal notranslate"><span class="pre">Environment.add_obstacle()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.environment.Environment.get_current"><code class="docutils literal notranslate"><span class="pre">Environment.get_current()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.environment.Obstacle"><code class="docutils literal notranslate"><span class="pre">Obstacle</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.environment.Obstacle.position"><code class="docutils literal notranslate"><span class="pre">Obstacle.position</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.environment.Obstacle.radius"><code class="docutils literal notranslate"><span class="pre">Obstacle.radius</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="underwater_swarm.html#module-underwater_swarm.metrics">underwater_swarm.metrics module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.metrics.PerformanceMonitor"><code class="docutils literal notranslate"><span class="pre">PerformanceMonitor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.metrics.PerformanceMonitor.sim"><code class="docutils literal notranslate"><span class="pre">PerformanceMonitor.sim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.metrics.PerformanceMonitor.calculate_alignment"><code class="docutils literal notranslate"><span class="pre">PerformanceMonitor.calculate_alignment()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.metrics.PerformanceMonitor.calculate_cohesion"><code class="docutils literal notranslate"><span class="pre">PerformanceMonitor.calculate_cohesion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.metrics.PerformanceMonitor.calculate_safety_violations"><code class="docutils literal notranslate"><span class="pre">PerformanceMonitor.calculate_safety_violations()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="underwater_swarm.html#module-underwater_swarm.safety">underwater_swarm.safety module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.safety.SafetyMonitor"><code class="docutils literal notranslate"><span class="pre">SafetyMonitor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.safety.SafetyMonitor.drone"><code class="docutils literal notranslate"><span class="pre">SafetyMonitor.drone</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.safety.SafetyMonitor.bounds"><code class="docutils literal notranslate"><span class="pre">SafetyMonitor.bounds</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.safety.SafetyMonitor.min_safe_dist"><code class="docutils literal notranslate"><span class="pre">SafetyMonitor.min_safe_dist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.safety.SafetyMonitor.check_collisions"><code class="docutils literal notranslate"><span class="pre">SafetyMonitor.check_collisions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.safety.SafetyMonitor.check_geofence"><code class="docutils literal notranslate"><span class="pre">SafetyMonitor.check_geofence()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="underwater_swarm.html#underwater-swarm-simulation-module">underwater_swarm.simulation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="underwater_swarm.html#underwater-swarm-swarm-module">underwater_swarm.swarm module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="underwater_swarm.html#module-underwater_swarm.viz">underwater_swarm.viz module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.sim"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.sim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.fig"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.fig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.ax"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.ax</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.scat"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.scat</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.obs_scat"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.obs_scat</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.enemy_scat"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.enemy_scat</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.friend_scat"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.friend_scat</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.stem_lines"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.stem_lines</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.is_2d"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.is_2d</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.selected_type"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.selected_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.selected_idx"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.selected_idx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.get_event_coords"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.get_event_coords()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.on_key"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.on_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.on_motion"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.on_motion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.on_press"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.on_press()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.on_release"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.on_release()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.on_scroll"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.on_scroll()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.start"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.start()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.toggle_view"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.toggle_view()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.update"><code class="docutils literal notranslate"><span class="pre">LiveVisualizer.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="underwater_swarm.html#underwater_swarm.viz.animate_swarm"><code class="docutils literal notranslate"><span class="pre">animate_swarm()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="underwater_swarm.html#module-underwater_swarm">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">EssaimDrones</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Agent Antigravity.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.0.4</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/modules.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

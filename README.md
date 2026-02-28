@@ -1,84 +1,112 @@
-# EssaimDrones : Gestion intelligente d'essaims de drones autonomes
+# EssaimDrones : Système Avancé de Commandement d'Essaims Sous-marins
 
-![Python](https://img.shields.io/badge/Python-3.11-blue.svg)
+![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
+![React](https://img.shields.io/badge/React-18-blue.svg)
 ![Type](https://img.shields.io/badge/Simulation-Underwater-teal.svg)
 ![Algorithm](https://img.shields.io/badge/Algorithm-Hydro--Boids-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-Simulateur d'essaim de drones sous-marins utilisant des règles bio-inspirées et une physique hydrodynamique simplifiée. Ce projet implémente le modèle **Hydro-Boids**, une adaptation du modèle de Reynolds intégrant les contraintes du milieu aquatique.
+**EssaimDrones**, également connu sous le nom de **AquaSwarm**, est une plateforme de commandement et de contrôle de nouvelle génération avec un focus sur les environnements sous-marins et les comportements biomimétiques. En utilisant les modèles Hydro-Boids et des orchestrateurs IA pour la planification, ce projet permet de simuler et visualiser l'évolution de drones pour des missions complexes.
 
 ## 🌊 Table des matières
 - [Présentation](#présentation)
-- [Fonctionnalités](#fonctionnalités)
 - [Architecture](#architecture)
-- [Modes de combat](#modes-de-combat)
+- [Fonctionnalités & Modes](#fonctionnalités--modes)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Tests](#tests)
+- [Documentation](#documentation)
+- [Tests & Qualité](#tests--qualité)
 
 ## 🎯 Présentation
-L'objectif est de démontrer un comportement collectif coordonné ("flocking") pour des missions de surveillance ou d'interdiction sous-marine. La simulation prend en compte l'inertie, la traînée quadratique et les courants environnementaux.
-
-### Bio-mimétisme & Hydrodynamique
-- **Rheotaxis** : Alignement avec les courants locaux pour minimiser l'effort énergétique.
-- **Drafting (Sillage)** : Réduction de traînée de 30% lorsqu'un drone suit un autre dans son cône de sillage.
-- **Formations Organiques** : Émergence de micro-alignements dus au bonus de sillage.
-
-## ✨ Fonctionnalités
-- **Visualisation 3D en direct** (Matplotlib/PyQt5).
-- **Physique Newtonienne** (F=ma) avec gestion de la traînée de l'eau.
-- **Comportements d'essaim paramétrables** (Séparation, Alignement, Cohésion).
-- **Environnement dynamique** avec champs de courants turbulents.
-- **10 modes opérationnels** allant de la patrouille à l'expansion rapide.
+L'objectif du projet est de gérer un comportement collectif en environnement hydrodynamique (courants turbulents, sillage). L'intégration récente d'un front-end en React et d'une orchestration Backend IA rend possible le commandement multi-agent en temps réel, ainsi qu'une interaction fluide grâce aux websockets.
 
 ## 🏗 Architecture
-Le projet est modulaire :
-- `underwater_swarm/drone.py` : Logique de l'agent individuel.
-- `underwater_swarm/swarm.py` : Cerveau de l'essaim et calcul des forces d'interaction.
-- `underwater_swarm/environment.py` : Simulation des courants et de la turbulence.
-- `underwater_swarm/simulation.py` : Moteur de simulation principal.
-- `underwater_swarm/viz.py` : Visualisation 3D temps réel.
+L'arborescence suit des principes stricts et une séparation claire Backend/Frontend :
 
-## ⚔ Modes de combat
-Le système supporte plusieurs modes tactiques prédéfinis :
-- **PATROL** : Dispersion pour couvrir une zone maximale.
-- **ATTACK** : Convergence rapide vers une cible avec alignement élevé.
-- **DEFEND** : Formation compacte (ballon) avec cohésion maximale.
-- **ENCIRCLE** : Orbite tangentielle autour d'une cible détectée.
-- **FLASH_EXPANSION** : Dispersion immédiate en cas de danger (biomimétique).
+- `Code/Backend` : Système Python utilisant FastAPI et agents LangChain (OpenAI/Gemini). Logiques de simulation hydrodynamiques (`underwater_swarm`), API WebSocket, gestion des drones.
+- `Code/Frontend` : Application Web React + Tailwind + Vite (Shadcn/UI, React Flow), offrant un Dashboard temps-réel avec mode clair/sombre, timers de mission et interaction directe avec l'Orchestrateur.
+- `Cmd/` : Scripts shell standalone (lancement, ingestion, etc).
+- `Config/` : Fichiers YAML de configuration globaux.
+- `Doc/` : Documentation générée (Sphinx, pdoc).
+- `Log/` : Fichiers logs (ex: firebase-debug.log).
+- `Test/` : Tests unitaires, de couverture, tests pytest pour backend/frontend.
+
+## ✨ Fonctionnalités & Modes
+- **Interface Utilisateur Moderne** : Dashboard fluide, statistiques des flottes, logs, sélecteur LLM avec persistance locale (SQLite).
+- **Communication Temps Réel** : WebSockets pour recevoir l'état des drones (position, statut, batterie) 60 fois par seconde.
+- **Orchestrateur IA** : Module IA permettant d'interagir via chat (LangChain, GPT-OSS/Gemini) pour envoyer des missions tactiques.
+- **Modes de combat** :
+  - **PATROL** : Dispersion et couverture maximale.
+  - **ATTACK** : Attaque alignée rapide.
+  - **DEFEND** : Cohésion maximale (formation compacte).
+  - **ENCIRCLE** : Encerclement en tangente.
+  - **FLASH_EXPANSION** : Dispersion d'urgence.
+  - **RECON** / **SWARM_DISPERSAL** etc...
 
 ## 🚀 Installation
-1. Clonez le dépôt :
+
+1. Cloner le projet :
 ```bash
 git clone https://github.com/dagornc/EssaimDrones.git
 cd EssaimDrones
 ```
 
-2. Installez les dépendances :
+2. Configuration de l'environnement Python :
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+3. Configuration Frontend (Node.js requis) :
+```bash
+cd Code/Frontend
+npm install
+```
+
+4. Variables d'environnement :
+Copiez `.env.example` en `.env` (à la racine) et ajoutez votre `OPENROUTER_API_KEY`.
+
 ## 💻 Usage
-Lancer une simulation interactive avec 30 drones :
+
+### Lancement Rapide
+Un script `start.sh` est disponible pour lancer le backend, le frontend et ouvrir automatiquement le navigateur:
 ```bash
-python3 main.py --drones 30 --mode PATROL
+./start.sh
 ```
 
-Lancer une simulation sans interface graphique (Headless) :
+### Lancement Manuel
+**Backend** :
 ```bash
-python3 main.py --drones 50 --steps 1000 --no-viz
+cd Code/Backend
+python -m uvicorn api.main:app --reload --port 8000
 ```
 
-### Arguments CLI :
-- `--drones` : Nombre de drones (défaut: 30).
-- `--steps` : Nombre de pas de simulation (mode no-viz).
-- `--no-viz` : Désactiver la visualisation.
-- `--mode` : Mode de départ (`PATROL`, `ATTACK`, `DEFEND`, etc.).
-
-## 🧪 Tests
-Exécutez la suite de tests avec pytest :
+**Frontend** :
 ```bash
-export PYTHONPATH=$PYTHONPATH:.
-python3 -m pytest
+cd Code/Frontend
+npm run dev
 ```
+
+## 📖 Documentation
+La documentation complète du projet Backend est générée via **Sphinx** :
+```bash
+cd Doc/sphinx
+make html
+```
+Les fichiers HTML générés sont consultables dans `Doc/sphinx/_build/html/`.
+
+## 🧪 Tests & Qualité
+Le code est conçu selon des principes stricts (TDD) :
+- Exécution de Mypy (Typage statique) et Flake8 (Linting).
+- Couverture Tests à plus de 95% minimum.
+```bash
+# Tests Backend
+pytest Test/
+
+# Tests Frontend
+cd Code/Frontend
+npm test
+```
+
+> Application conçue avec une approche Lean, orientée Artifact-first par l'Agent Antigravity.
