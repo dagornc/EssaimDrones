@@ -8,6 +8,7 @@ import { useMissionTimer } from '../hooks/useMissionTimer';
 import PageTransition from './PageTransition';
 import OnboardingWizard from './OnboardingWizard';
 import AgentChat from './AgentChat';
+import PageHelp from './PageHelp';
 import { useState } from 'react';
 
 export default function Layout() {
@@ -140,12 +141,16 @@ export default function Layout() {
                             <span className="font-bold text-slate-900 dark:text-slate-50 uppercase tracking-wide text-xs">
                                 {navItems.find(i => i.path === location.pathname)?.name}
                             </span>
+                            <PageHelp path={location.pathname} />
                         </div>
 
                         {/* Mobile title */}
-                        <span className="md:hidden text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide">
-                            {navItems.find(i => i.path === location.pathname)?.name}
-                        </span>
+                        <div className="md:hidden flex items-center gap-2">
+                            <span className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide">
+                                {navItems.find(i => i.path === location.pathname)?.name}
+                            </span>
+                            <PageHelp path={location.pathname} />
+                        </div>
 
                         {/* Mission Timer */}
                         <div className="hidden sm:flex items-center">
