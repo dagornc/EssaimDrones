@@ -128,7 +128,7 @@ export default function Metrics() {
             y: y.toFixed(1),
             z: z.toFixed(1),
             speed: speed.toFixed(1),
-            active: (d as any).active ?? true,
+            active: (d as Record<string, unknown>).active ?? true,
         };
     });
 

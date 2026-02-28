@@ -19,6 +19,7 @@ export interface SimulationData {
     drones: DronePosition[];
     targets: DronePosition[];
     friends: DronePosition[];
+    obstacles?: DronePosition[];
     metrics: Metrics;
 }
 

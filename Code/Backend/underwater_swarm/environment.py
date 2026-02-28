@@ -78,4 +78,3 @@ class Environment:
         )
 
         return flow + turbulence
-

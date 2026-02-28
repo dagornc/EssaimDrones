@@ -4,8 +4,8 @@ Provides async CRUD operations.
 """
 
 from datetime import datetime, timezone
-from typing import Dict, List
 from pathlib import Path
+from typing import Dict, List
 
 import aiosqlite
 
@@ -43,6 +43,7 @@ async def init_db() -> None:
 
 # --- Custom Provider CRUD ---
 
+
 async def save_custom_provider(
     name: str,
     display_name: str,
@@ -79,10 +80,26 @@ async def save_custom_provider(
                    access_method = excluded.access_method,
                    icon = excluded.icon,
                    updated_at = excluded.updated_at""",
-            (name, display_name, base_url, api_key, default_model, access_method, icon, now, now),
+            (
+                name,
+                display_name,
+                base_url,
+                api_key,
+                default_model,
+                access_method,
+                icon,
+                now,
+                now,
+            ),
         )
         await db.commit()
-    return {"name": name, "display_name": display_name, "base_url": base_url, "created_at": now, "updated_at": now}
+    return {
+        "name": name,
+        "display_name": display_name,
+        "base_url": base_url,
+        "created_at": now,
+        "updated_at": now,
+    }
 
 
 async def list_custom_providers() -> List[Dict[str, str]]:
@@ -93,13 +110,18 @@ async def list_custom_providers() -> List[Dict[str, str]]:
     """
     async with aiosqlite.connect(_DB_PATH) as db:
         db.row_factory = aiosqlite.Row
-        cursor = await db.execute("SELECT * FROM custom_providers ORDER BY created_at ASC")
+        cursor = await db.execute(
+            "SELECT * FROM custom_providers ORDER BY created_at ASC"
+        )
         rows = await cursor.fetchall()
         return [
             {
-                "name": row["name"], "display_name": row["display_name"],
-                "base_url": row["base_url"], "api_key": row["api_key"],
-                "default_model": row["default_model"], "access_method": row["access_method"],
+                "name": row["name"],
+                "display_name": row["display_name"],
+                "base_url": row["base_url"],
+                "api_key": row["api_key"],
+                "default_model": row["default_model"],
+                "access_method": row["access_method"],
                 "icon": row["icon"],
             }
             for row in rows
@@ -116,6 +138,8 @@ async def delete_custom_provider(name: str) -> bool:
         True if deleted, False if not found.
     """
     async with aiosqlite.connect(_DB_PATH) as db:
-        cursor = await db.execute("DELETE FROM custom_providers WHERE name = ?", (name,))
+        cursor = await db.execute(
+            "DELETE FROM custom_providers WHERE name = ?", (name,)
+        )
         await db.commit()
         return cursor.rowcount > 0

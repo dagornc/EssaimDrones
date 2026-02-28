@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { HelpDialog } from './ui/HelpDialog';
 
 interface PageHelpProps {
@@ -6,8 +5,6 @@ interface PageHelpProps {
 }
 
 export default function PageHelp({ path }: PageHelpProps) {
-    const { t } = useTranslation();
-
     const getHelpContent = () => {
         switch (path) {
             case '/':
@@ -63,17 +60,22 @@ export default function PageHelp({ path }: PageHelpProps) {
                 };
             case '/metrics':
                 return {
-                    title: "Aide : Métriques & Analytique",
+                    title: "Aide : Métriques de performance",
                     desc: (
                         <div className="space-y-4 text-justify">
                             <p><strong>À quoi sert cette fenêtre ?</strong><br />
-                                Cette page est dédiée à l'analyse détaillée des performances de l'essaim. Contrairement au tableau de bord, ici vous trouverez des statistiques historiques par drone individuel.</p>
+                                Cette page est le centre analytique de votre essaim. Elle vous permet de comprendre concrètement comment les drones se comportent et performent physiquement ensemble ("Métriques de performance").</p>
+                            <p><strong>Explication des métriques :</strong></p>
+                            <ul className="list-disc pl-5 space-y-1">
+                                <li><strong>Cohésion :</strong> Mesure à quel point les drones restent groupés. Une valeur élevée signifie qu'ils sont très proches (idéal pour la défense).</li>
+                                <li><strong>Alignement :</strong> Indique si les drones pointent et voyagent tous dans la même direction. Indispensable pour une patrouille synchronisée.</li>
+                                <li><strong>Geofence / Hors-limites :</strong> Vérifie si l'essaim respecte la zone assignée.</li>
+                            </ul>
                             <p><strong>Actions possibles :</strong></p>
                             <ul className="list-disc pl-5 space-y-1">
-                                <li>Rechercher un drone spécifique via son `Drone ID`.</li>
-                                <li>Analyser la "Télémétrie par Drone" (Position et Vitesse de chaque UAV).</li>
-                                <li>Étudier comment les drones se répartissent la vitesse dans le graphique de distribution.</li>
-                                <li>Exporter ou analyser des KPIs plus poussés (comme la distance au centre).</li>
+                                <li>Analyser la "Télémétrie par Drone" pour voir la position et la vitesse en direct de chaque entité.</li>
+                                <li>Rechercher un drone spécifique avec son `ID`.</li>
+                                <li>Étudier la distribution des vitesses ou l'historique d'utilisation des modes.</li>
                             </ul>
                         </div>
                     )

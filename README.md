@@ -97,7 +97,7 @@ make html
 Les fichiers HTML générés sont consultables dans `Doc/sphinx/_build/html/`.
 
 ## 🧪 Tests & Qualité
-Le code est conçu selon des principes stricts (TDD) :
+Le code est conçu selon des principes stricts (TDD) et une Qualité Gate forte :
 - Exécution de Mypy (Typage statique) et Flake8 (Linting).
 - Couverture Tests à plus de 95% minimum.
 ```bash
@@ -106,7 +106,14 @@ pytest Test/
 
 # Tests Frontend
 cd Code/Frontend
-npm test
+npm run test:coverage
+```
+
+### Analyse SonarQube
+Un fichier `sonar-project.properties` est configuré à la racine pour assurer le respect des métriques de qualité globales (Backend + Frontend).
+Pour lancer l'analyse locale (nécessite `sonar-scanner` installé) :
+```bash
+sonar-scanner
 ```
 
 > Application conçue avec une approche Lean, orientée Artifact-first par l'Agent Antigravity.

@@ -38,8 +38,8 @@ vi.mock('recharts', async () => {
     return {
         ...actual,
         ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
-        LineChart: ({ children }: any) => <div data-testid="recharts-linechart">{children}</div>,
-        Line: () => <div data-testid="recharts-line" />,
+        AreaChart: ({ children }: any) => <div data-testid="recharts-areachart">{children}</div>,
+        Area: () => <div data-testid="recharts-area" />,
         XAxis: () => <div />,
         YAxis: () => <div />,
         CartesianGrid: () => <div />,
@@ -84,7 +84,7 @@ describe('Dashboard', () => {
 
         // Active Drones
         expect(screen.getByText('active_drones')).toBeInTheDocument();
-        expect(screen.getByText((_, element) => element?.textContent === '2/30')).toBeInTheDocument();
+        expect(screen.getByText((_, element) => element?.textContent === '2/50')).toBeInTheDocument();
 
         // Mode
         expect(screen.getByText('current_mode')).toBeInTheDocument();
@@ -106,7 +106,7 @@ describe('Dashboard', () => {
         // The attack button
         expect(screen.getByRole('button', { name: /ATTACK/i })).toBeInTheDocument();
 
-        expect(screen.getByTestId('recharts-linechart')).toBeInTheDocument();
+        expect(screen.getByTestId('recharts-areachart')).toBeInTheDocument();
     });
 
     it('renders dashboard with minimal metrics history', async () => {

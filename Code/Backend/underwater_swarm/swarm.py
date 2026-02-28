@@ -13,8 +13,8 @@ from typing import TYPE_CHECKING
 import numpy as np
 from scipy.spatial.distance import cdist
 
-from .config import SwarmMode
 from .behaviors import behavior_factory
+from .config import SwarmMode
 
 if TYPE_CHECKING:
     from .drone import Drone
@@ -53,7 +53,7 @@ class SwarmController:
         np.fill_diagonal(dist_matrix, np.inf)
 
         # 3. Handle Flash Expansion (Global survival trait)
-        from .config import FLASH_TRIGGER_DIST, FLASH_DURATION, DT, MAX_FORCE
+        from .config import DT, FLASH_DURATION, FLASH_TRIGGER_DIST, MAX_FORCE
 
         if mode != SwarmMode.ATTACK and targets:
             for i, drone in enumerate(drones):

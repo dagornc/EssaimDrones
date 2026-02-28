@@ -7,16 +7,9 @@ and state management for various behaviors.
 
 from __future__ import annotations
 
-
 import numpy as np
 
-from .config import (
-    DRAG_COEFF,
-    MASS,
-    MAX_FORCE,
-    MAX_SPEED,
-    WATER_DENSITY,
-)
+from .config import DRAG_COEFF, MASS, MAX_FORCE, MAX_SPEED, WATER_DENSITY
 from .safety import SafetyMonitor
 
 

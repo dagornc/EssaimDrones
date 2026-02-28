@@ -4,12 +4,13 @@ This module implements the Strategy pattern for different swarm behaviors,
 using vectorized numpy operations for high performance.
 """
 
-from typing import Protocol, List, Any
+from typing import Any, List, Protocol
+
 import numpy as np
 
-from .config import MODE_PARAMS, MAX_FORCE, PERCEPTION_RADIUS
-from .config import SwarmMode, BOUNDS, PSO_INERTIA, PSO_COGNITIVE, PSO_SOCIAL
-from .config import DRAFTING_BONUS
+from .config import (BOUNDS, DRAFTING_BONUS, MAX_FORCE, MODE_PARAMS,
+                     PERCEPTION_RADIUS, PSO_COGNITIVE, PSO_INERTIA, PSO_SOCIAL,
+                     SwarmMode)
 
 
 def _normalize_vec(vecs: np.ndarray) -> np.ndarray:

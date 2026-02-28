@@ -51,6 +51,23 @@ class Simulation:
         self.history: list[list[np.ndarray]] = []
         self.perf_monitor: PerformanceMonitor | None = None
 
+    def set_num_drones(self, num: int) -> None:
+        """Dynamically adjusts the number of drones in the simulation.
+
+        Args:
+            num: Target number of drones.
+        """
+        current = len(self.drones)
+        if num > current:
+            # Add drones
+            from .drone import Drone
+
+            for i in range(current, num):
+                self.drones.append(Drone(i, np.random.rand(3) * 50))
+        elif num < current:
+            # Remove drones
+            self.drones = self.drones[:num]
+
     def step(self) -> None:
         """Advances the simulation by one time step."""
         # Update targets (wandering) only if not manual

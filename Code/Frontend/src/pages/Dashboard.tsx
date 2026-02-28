@@ -1,9 +1,10 @@
 import { useOutletContext } from 'react-router-dom';
 import { ShieldAlert, Activity, GitCommitHorizontal, Focus } from 'lucide-react';
 import type { OutletContextType } from '../types/simulation';
-import { XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../components/ui/Toast';
+import { HelpDialog } from '../components/ui/HelpDialog';
 import { useMemo } from 'react';
 import type { DronePosition } from '../types/simulation';
 
@@ -73,11 +74,11 @@ export default function Dashboard() {
                 <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
                     <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{t('active_drones')}</h3>
                     <div className="flex items-end justify-between">
-                        <span className="text-4xl font-light text-slate-900 dark:text-white">{activeDrones}<span className="text-lg text-slate-500">/30</span></span>
+                        <span className="text-4xl font-light text-slate-900 dark:text-white">{activeDrones}<span className="text-lg text-slate-500">/50</span></span>
                         <span className="text-cyan-500 text-sm font-bold tracking-wide">{t('stable')}</span>
                     </div>
                     <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 mt-4 rounded-full overflow-hidden">
-                        <div className="bg-cyan-500 h-full rounded-full" style={{ width: `${(activeDrones / 30) * 100}%` }}></div>
+                        <div className="bg-cyan-500 h-full rounded-full" style={{ width: `${(activeDrones / 50) * 100}%` }}></div>
                     </div>
                 </div>
 
@@ -96,7 +97,12 @@ export default function Dashboard() {
                     <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{t('cohesion_index')}</h3>
                     <div className="flex items-center justify-between">
                         <span className="text-4xl font-light text-slate-900 dark:text-white font-mono">{data.metrics.cohesion?.toFixed(2) || '0.00'}</span>
-                        <div className="w-10 h-10 rounded-full border-4 border-slate-200 dark:border-slate-800 border-t-cyan-500 transform -rotate-45"></div>
+                        <div className="relative w-10 h-10">
+                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path className="stroke-slate-200 dark:stroke-slate-800 fill-none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" strokeWidth="3"></path>
+                                <path className="stroke-cyan-500 fill-none transition-all duration-500 ease-out" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" strokeDasharray={`${Math.min(100, Math.max(0, (data.metrics.cohesion || 0) * 20))}, 100`} strokeWidth="3"></path>
+                            </svg>
+                        </div>
                     </div>
                 </div>
 
@@ -146,7 +152,6 @@ export default function Dashboard() {
                     </svg>
 
                     <div className="absolute bottom-4 left-4 bg-slate-950/80 backdrop-blur-sm border border-slate-800 rounded bg-black/50 px-3 py-1.5 flex gap-4 text-[10px] font-mono text-slate-400">
-                        <span>DEPTH: 50.0M</span>
                         <span>POV: TOP-DOWN</span>
                     </div>
                 </div>
@@ -190,7 +195,21 @@ export default function Dashboard() {
                 {/* Performance Metrics Chart */}
                 <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="font-bold text-slate-100 tracking-wide">{t('performance_metrics')}</h3>
+                        <div className="flex items-center gap-2">
+                            <h3 className="font-bold text-slate-100 tracking-wide">{t('performance_metrics')}</h3>
+                            <HelpDialog
+                                title="Aide : Métriques de performance"
+                                description={
+                                    <div className="space-y-4 text-justify">
+                                        <p>Ce graphique montre l'évolution en temps réel des deux paramètres essentiels du comportement en essaim.</p>
+                                        <ul className="list-disc pl-5 space-y-1">
+                                            <li><strong>Cohésion (Bleu) :</strong> Tendance des drones à se regrouper vers le centre de masse de leurs voisins.</li>
+                                            <li><strong>Alignement (Vert) :</strong> Capacité des drones à adapter leur vitesse et direction sur celles de leurs voisins.</li>
+                                        </ul>
+                                    </div>
+                                }
+                            />
+                        </div>
                         <div className="flex items-center gap-4 text-[10px] font-bold tracking-wider">
                             <span className="flex items-center gap-1.5 text-cyan-400"><div className="w-2 h-2 rounded-full bg-cyan-400"></div> COHESION</span>
                             <span className="flex items-center gap-1.5 text-green-400"><div className="w-2 h-2 rounded-full bg-green-400"></div> ALIGNMENT</span>
@@ -199,17 +218,28 @@ export default function Dashboard() {
 
                     <div className="h-48" style={{ minWidth: 200, minHeight: 100 }}>
                         <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={100}>
-                            <LineChart data={chartData}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="colorCohesion" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.4} />
+                                        <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                                    </linearGradient>
+                                    <linearGradient id="colorAlignment" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#4ade80" stopOpacity={0.4} />
+                                        <stop offset="95%" stopColor="#4ade80" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                                 <XAxis dataKey="name" hide />
-                                <YAxis hide />
+                                <YAxis hide domain={['auto', 'auto']} />
                                 <RechartsTooltip
-                                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px', fontSize: '12px' }}
+                                    contentStyle={{ backgroundColor: 'rgba(15,23,42,0.9)', backdropFilter: 'blur(8px)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}
                                     itemStyle={{ color: '#94a3b8' }}
+                                    cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '4 4' }}
                                 />
-                                <Line type="monotone" dataKey="cohesion" stroke="#06b6d4" strokeWidth={2} dot={false} />
-                                <Line type="monotone" dataKey="alignment" stroke="#4ade80" strokeWidth={2} dot={false} strokeDasharray="4 4" />
-                            </LineChart>
+                                <Area type="monotone" dataKey="cohesion" stroke="#06b6d4" strokeWidth={3} fillOpacity={1} fill="url(#colorCohesion)" activeDot={{ r: 6, strokeWidth: 0, fill: '#06b6d4' }} />
+                                <Area type="monotone" dataKey="alignment" stroke="#4ade80" strokeWidth={2} strokeDasharray="4 4" fillOpacity={1} fill="url(#colorAlignment)" activeDot={{ r: 5, strokeWidth: 0, fill: '#4ade80' }} />
+                            </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>

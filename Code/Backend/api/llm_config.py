@@ -34,7 +34,9 @@ def _resolve_env_vars(value: str) -> str:
     def _replacer(match: re.Match[str]) -> str:
         var_name = match.group(1)
         default_val = match.group(2)
-        return os.getenv(var_name, default_val if default_val is not None else f"MISSING_{var_name}")
+        return os.getenv(
+            var_name, default_val if default_val is not None else f"MISSING_{var_name}"
+        )
 
     return pattern.sub(_replacer, value)
 

@@ -15,19 +15,20 @@ from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
+from api.database import (delete_custom_provider, init_db,
+                          list_custom_providers, save_custom_provider)
+from api.llm_config import get_llm_config
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-
-from underwater_swarm.simulation import Simulation
 from underwater_swarm.config import SwarmMode
 from underwater_swarm.metrics import PerformanceMonitor
-from api.llm_config import get_llm_config
-from api.database import init_db, save_custom_provider, list_custom_providers, delete_custom_provider
+from underwater_swarm.simulation import Simulation
 
 
 class CustomProviderRequest(BaseModel):
     """Request body for saving a custom provider."""
+
     name: str
     display_name: str
     base_url: str
@@ -62,9 +63,7 @@ connected_clients: set[WebSocket] = set()
 
 # Track the active provider/model at runtime
 _active_provider: str = os.getenv("LLM_PROVIDER", "openrouter")
-_active_model: str = os.getenv(
-    "LLM_MODEL", "google/gemini-2.0-flash-exp:free"
-)
+_active_model: str = os.getenv("LLM_MODEL", "google/gemini-2.0-flash-exp:free")
 
 
 async def simulation_loop() -> None:
@@ -89,6 +88,11 @@ async def broadcast_loop() -> None:
                 "friends": (
                     [f.tolist() for f in sim.friends]
                     if hasattr(sim, "friends") and sim.friends
+                    else []
+                ),
+                "obstacles": (
+                    [obs.position.tolist() for obs in sim.environment.obstacles]
+                    if hasattr(sim, "environment") and hasattr(sim.environment, "obstacles") and sim.environment.obstacles
                     else []
                 ),
             }
@@ -184,6 +188,7 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
                 entity_type = payload.get("entity_type")
                 pos = payload.get("position", [50, 50, 50])
                 import numpy as np
+
                 if entity_type == "enemy":
                     if not hasattr(sim, "targets"):
                         sim.targets = []
@@ -192,6 +197,13 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
                     if not hasattr(sim, "friends"):
                         sim.friends = []
                     sim.friends.append(np.array(pos))
+                elif entity_type == "obstacle":
+                    from underwater_swarm.environment import Obstacle
+                    # Environment is accessible via sim.environment
+                    sim.environment.obstacles.append(Obstacle(np.array(pos), radius=5.0))
+            elif "action" in payload and payload["action"] == "set_num_drones":
+                new_num = payload.get("value", 20)
+                sim.set_num_drones(new_num)
     except WebSocketDisconnect:
         connected_clients.remove(websocket)
 
@@ -235,34 +247,40 @@ async def get_models() -> dict[str, object]:
         if default_mdl and default_mdl not in models_list:
             models_list.append(default_mdl)
 
-        providers_list.append({
-            "name": name,
-            "display_name": prov.get("display_name", name),
-            "base_url": str(prov.get("base_url", "")),
-            "icon": prov.get("icon", "settings"),
-            "description": prov.get("description", ""),
-            "recommended": prov.get("recommended", False),
-            "default_model": default_mdl,
-            "models": models_list,
-            "is_custom": False,
-        })
+        providers_list.append(
+            {
+                "name": name,
+                "display_name": prov.get("display_name", name),
+                "base_url": str(prov.get("base_url", "")),
+                "icon": prov.get("icon", "settings"),
+                "description": prov.get("description", ""),
+                "recommended": prov.get("recommended", False),
+                "default_model": default_mdl,
+                "models": models_list,
+                "is_custom": False,
+            }
+        )
 
     # Add custom providers from database
     custom_provs = await list_custom_providers()
     for cp in custom_provs:
         cp_models = [cp["default_model"]] if cp["default_model"] else []
-        providers_list.append({
-            "name": cp["name"],
-            "display_name": cp["display_name"],
-            "base_url": cp["base_url"],
-            "icon": cp["icon"],
-            "description": "User Custom Provider",
-            "recommended": False,
-            "default_model": cp["default_model"],
-            "models": cp_models,
-            "is_custom": True,
-            "api_key": cp["api_key"],  # Passed to switch but hidden from general frontend
-        })
+        providers_list.append(
+            {
+                "name": cp["name"],
+                "display_name": cp["display_name"],
+                "base_url": cp["base_url"],
+                "icon": cp["icon"],
+                "description": "User Custom Provider",
+                "recommended": False,
+                "default_model": cp["default_model"],
+                "models": cp_models,
+                "is_custom": True,
+                "api_key": cp[
+                    "api_key"
+                ],  # Passed to switch but hidden from general frontend
+            }
+        )
 
     return {
         "providers": providers_list,
@@ -315,12 +333,8 @@ async def switch_model(req: ModelSwitchRequest) -> dict[str, str]:
                 },
             )
             orchestrator.llm = new_llm
-            orchestrator.llm_with_tools = new_llm.bind_tools(
-                orchestrator.tools
-            )
-            print(
-                f"LLM hot-swapped to {req.provider}/{req.model}"
-            )
+            orchestrator.llm_with_tools = new_llm.bind_tools(orchestrator.tools)
+            print(f"LLM hot-swapped to {req.provider}/{req.model}")
         except Exception as e:
             return {"error": f"LLM swap failed: {e}"}
 
@@ -417,18 +431,11 @@ async def fetch_provider_models(provider_name: str) -> list[str]:
 
             if isinstance(data, dict) and "data" in data:
                 return sorted(
-                    [
-                        m["id"]
-                        for m in data["data"]
-                        if isinstance(m, dict) and "id" in m
-                    ]
+                    [m["id"] for m in data["data"] if isinstance(m, dict) and "id" in m]
                 )
             if isinstance(data, list):
                 return sorted(
-                    [
-                        m["id"] if isinstance(m, dict) else str(m)
-                        for m in data
-                    ]
+                    [m["id"] if isinstance(m, dict) else str(m) for m in data]
                 )
             return []
     except Exception as exc:

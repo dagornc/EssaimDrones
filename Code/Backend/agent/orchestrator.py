@@ -5,15 +5,15 @@ to decide whether to change the swarm's operational mode dynamically.
 """
 
 import os
-from typing import TypedDict, Annotated
+from typing import Annotated, TypedDict
+
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage, HumanMessage, BaseMessage
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langchain_core.tools import tool
-from langgraph.graph import StateGraph, START
+from langchain_openai import ChatOpenAI
+from langgraph.graph import START, StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
-
 from underwater_swarm.config import SwarmMode
 
 load_dotenv(override=True)

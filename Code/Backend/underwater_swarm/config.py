@@ -7,8 +7,9 @@ type safety and correct configuration structure at runtime.
 import os
 from enum import Enum
 from typing import Dict, List
-import yaml
+
 import numpy as np
+import yaml
 from pydantic import BaseModel
 
 
