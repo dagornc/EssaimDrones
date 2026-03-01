@@ -14,198 +14,207 @@
 ## 📋 Table des matières
 1. [🎯 Présentation](#-présentation)
 2. [🏗 Architecture du Système](#-architecture-du-système)
-3. [🧠 Intelligence Collective & Modes](#-intelligence-collective--modes)
-4. [✨ Fonctionnalités Clés](#-fonctionnalités-clés)
+3. [✨ Fonctionnalités Clés](#-fonctionnalités-clés)
+4. [🧠 Intelligence Collective & Modes](#-intelligence-collective--modes)
 5. [🚀 Installation](#-installation)
 6. [💻 Usage](#-usage)
-7. [📖 Documentation](#-documentation)
-8. [🧪 Tests & Qualité](#-tests--qualité)
+7. [🧪 Tests & Qualité](#-tests--qualité)
+8. [📖 Documentation](#-documentation)
 9. [🗺 Roadmap](#-roadmap)
 
 ---
 
 ## 🎯 Présentation
-Le projet vise à résoudre les défis de la coordination multi-agent en milieu sous-marin :
-- **Dynamique des fluides** : Modélisation simplifiée des courants et de l'effet d'aspiration (drafting).
-- **Autonomie Décisionnelle** : Chaque drone suit des règles locales simples produisant un comportement émergent complexe.
-- **Supervision IA** : Un "Cerveau Global" (LLM) analyse les métriques de la flotte pour adapter la stratégie en temps réel.
+
+Le projet **EssaimDrones** vise à simuler des comportements collectifs complexes au sein d'une flotte de drones sous-marins. Contrairement aux approches centralisées classiques, AquaSwarm repose sur l'émergence de comportements à partir de règles locales simples, supervisées par une IA tactique de haut niveau.
+
+### 🌀 Le Cycle de Commandement
+```mermaid
+graph TD
+    A[🎯 Objectif de Mission] --> B{🧠 Orchestrateur IA}
+    B -->|Choix Tactique| C[🐟 Contrôleur d'Essaim]
+    C -->|Forces Physiques| D[🛸 Drones Individuels]
+    D -->|Métriques & Capteurs| E[📊 Analyse Temps Réel]
+    E --> B
+    
+    style B fill:#f3e5f5,stroke:#4a148c
+    style C fill:#fff3e0,stroke:#e65100
+    style D fill:#e1f5fe,stroke:#01579b
+```
 
 ---
 
 ## 🏗 Architecture du Système
 
-L'écosystème est divisé en deux piliers technologiques majeurs :
+L'architecture est conçue pour la performance et l'extensibilité, utilisant **FastAPI** pour la communication asynchrone et **NumPy** pour les calculs vectorisés.
 
-### 🗂 Structure du Projet
-```text
-EssaimDrones/
-├── Code/
-│   ├── Backend/          # Moteur Python (FastAPI, NumPy, LangGraph)
-│   └── Frontend/         # Interface React (Vite, Tailwind, Shadcn)
-├── Cmd/                  # Scripts de déploiement et contrôle
-├── Config/               # Configurations YAML globales
-├── Doc/                  # Documentation technique (Sphinx)
-└── Test/                 # Suite de tests (Pytest, Vitest)
+### 🧱 Décomposition des Composants
+```mermaid
+graph TD
+    subgraph "Frontend (React + Vite)"
+        V[Vue Tactique Canvas]
+        D[Dashboard Metrics]
+        C[Agent Chat Interface]
+        H[Hooks WebSocket]
+    end
+
+    subgraph "Backend (FastAPI)"
+        S[Engine: NumPy Physics]
+        O[Orchestrator: LangGraph Agent]
+        A[API: WebSocket/REST]
+        DB[(SQLite DB)]
+    end
+
+    H <--> A
+    A <--> S
+    S <--> O
+    O <--> DB
+    
+    style S fill:#fff3e0,stroke:#e65100
+    style O fill:#f3e5f5,stroke:#4a148c
+    style V fill:#e8f5e9,stroke:#2e7d32
 ```
 
-### 🛰 Schéma de Flux de Données
+---
+
+## ✨ Fonctionnalités Clés
+
+Le système AquaSwarm offre un ensemble complet d'outils pour la gestion d'essaims :
+
 ```mermaid
-graph LR
-    subgraph "💻 Station de Contrôle (Frontend)"
-        GUI[Dashboard React]
-        Store[Local Storage / SQLite]
-        GUI <--> Store
-    end
-
-    subgraph "🤖 Centre de Calcul (Backend)"
-        API[FastAPI WebSocket]
-        SIM[Moteur Physique NumPy]
-        AGENT[Orchestrateur LangGraph]
-        
-        API <--> SIM
-        SIM <--> AGENT
-    end
-
-    GUI <-->|Flux Temps Réel 60Hz| API
-    AGENT <-->|Tactique| LLM[LLM Cloud: Gemini/GPT]
-
-    style GUI fill:#e1f5fe,stroke:#01579b
-    style SIM fill:#fff3e0,stroke:#e65100
-    style AGENT fill:#f3e5f5,stroke:#4a148c
+mindmap
+  root((AquaSwarm))
+    Physique
+      Biomimétisme Boids
+      Optimisation PSO
+      Effet Drafting
+    Intelligence
+      Agent LangGraph
+      Multi-LLM Support
+      Analyse Tactique
+    Interface
+      Visualisation 2D/3D
+      Logs Interactifs
+      Configuration Dynamique
+    Qualité
+      Tests Pytest/Vitest
+      Typage Mypy
+      CI/CD Ready
 ```
 
 ---
 
 ## 🧠 Intelligence Collective & Modes
 
-Le simulateur permet de basculer dynamiquement entre plusieurs comportements stratégiques.
+L'essaim peut adopter différentes formations et stratégies selon la situation.
 
-### 🔄 Diagramme d'États des Modes
+### ⚔️ Modes de Combat & Formations
+| Mode | Schéma Conceptuel | Description |
+| :--- | :--- | :--- |
+| **PATROL** | `⸫ ⸪ ⸬` | Dispersion optimisée pour couvrir une zone maximale. |
+| **ATTACK** | `▶ ▶ ▶` | Formation en pointe (wedge) pour percer une défense. |
+| **SHIELD** | `( ⦿ )` | Formation sphérique dense autour d'une cible alliée. |
+| **ENCIRCLE**| `⟳ ⦿ ⟲` | Encerclement tangentiel pour neutraliser une cible. |
+
+### 🔄 Logique de Transition
 ```mermaid
 stateDiagram-v2
-    [*] --> PATROL
-    PATROL --> ATTACK : Menace détectée
-    ATTACK --> PATROL : Cible éliminée
-    PATROL --> DEFEND : Protection alliée requise
-    DEFEND --> SHIELD : Formation de tortue
-    SHIELD --> PATROL : Fin d'alerte
-    PATROL --> SEARCH : Zone inconnue
-    SEARCH --> PATROL : Exploration finie
-    any --> FLASH_EXPANSION : Danger imminent !
+    [*] --> Idle
+    Idle --> Patrol : Start Mission
+    Patrol --> Attack : Threat Detected
+    Attack --> Patrol : Target Neutralized
+    Patrol --> Search : Zone Unknown
+    Search --> Patrol : Pattern Complete
+    any --> Flash_Expansion : Critical Hazard!
 ```
-
-### 🛠 Modes détaillés
-- **🛡️ SHIELD** : Les drones forment une sphère de protection autour d'une unité amie, alternant leurs positions pour optimiser la batterie.
-- **🔍 SEARCH (PSO)** : Utilisation de l'optimisation par essaim de particules pour trouver des sources de chaleur ou de pollution.
-- **🚀 FLASH_EXPANSION** : Les drones s'écartent instantanément du centre pour éviter une explosion ou un prédateur.
-- **🐟 SCHOOLING** : Alignement parfait des vecteurs vitesse pour une navigation longue distance économe.
-
----
-
-## ✨ Fonctionnalités Clés
-
-| Fonctionnalité | Description | Technologie |
-| :--- | :--- | :--- |
-| **Vue Tactique 2D/3D** | Visualisation en temps réel des drones et obstacles. | React Canvas / SVG |
-| **Agentic Command** | Chat interactif pour donner des ordres à l'essaim. | LangChain / LangGraph |
-| **Drafting Bio** | Gain d'énergie en suivant le sillage d'un autre drone. | NumPy Vectorized |
-| **Hot Swap LLM** | Changement de modèle IA (Gemini/GPT) sans redémarrer. | API Dynamic Provider |
-| **Persistence** | Sauvegarde des configurations et logs de mission. | SQLite / LocalStorage |
 
 ---
 
 ## 🚀 Installation
 
-### 1. Prérequis
-- **Python 3.11+** (avec `pip` et `venv`)
-- **Node.js 18+** (avec `npm`)
-- Clé API **OpenRouter** (optionnelle mais recommandée pour l'IA)
+L'installation est simplifiée par l'utilisation d'environnements virtuels et de gestionnaires de paquets modernes.
 
-### 2. Configuration Rapide
-```bash
-# Cloner le dépôt
-git clone https://github.com/dagornc/EssaimDrones.git
-cd EssaimDrones
-
-# Installer le backend
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-
-# Installer le frontend
-cd Code/Frontend
-npm install
+### 🛠 Workflow d'Installation
+```mermaid
+flowchart LR
+    A[Clone Repo] --> B[Create Venv]
+    B --> C[Install Python Deps]
+    C --> D[Install NPM Deps]
+    D --> E[Config .env]
+    E --> F[Launch start.sh]
+    
+    style F fill:#dcedc8,stroke:#33691e
 ```
 
-### 3. Environnement
-Créez un fichier `.env` à la racine :
-```env
-OPENROUTER_API_KEY=votre_cle_api
-LLM_PROVIDER=openrouter
-LLM_MODEL=google/gemini-2.0-flash-exp:free
-```
+1. **Backend** : `pip install -r requirements.txt`
+2. **Frontend** : `cd Code/Frontend && npm install`
+3. **Variables** : Configurer la clé `OPENROUTER_API_KEY` dans le fichier `.env`.
 
 ---
 
 ## 💻 Usage
 
-### ⚡ Lancement Automatique
-Le script `start.sh` gère tout pour vous (vérification des clés, démarrage des services, ouverture de Chrome) :
-```bash
-chmod +x start.sh
-./start.sh
+### 🎮 Expérience Utilisateur
+```mermaid
+journey
+    title Utilisation d'AquaSwarm
+    section Démarrage
+      Lancer start.sh: 5: User
+      Vérification Services: 3: App
+      Ouverture Browser: 5: App
+    section Mission
+      Configurer Flotte: 4: User
+      Sélectionner LLM: 4: User
+      Envoyer Ordre Chat: 5: User
+    section Analyse
+      Suivre Métriques: 4: User
+      Consulter Logs: 3: User
 ```
 
-### 🛠 Lancement Manuel
-**Terminal 1 (Backend)** :
-```bash
-cd Code/Backend
-python -m uvicorn api.main:app --reload --port 8000
-```
-
-**Terminal 2 (Frontend)** :
-```bash
-cd Code/Frontend
-npm run dev
-```
-
----
-
-## 📖 Documentation
-
-La documentation technique est générée automatiquement à partir des docstrings du code.
-
-### 🏗 Générer avec Sphinx
-```bash
-cd Doc/sphinx
-make html
-```
-Les fichiers sont accessibles dans `Doc/sphinx/_build/html/index.html`.
+- **Automatique** : `./start.sh` (recommandé).
+- **Manuel** : Lancer `uvicorn` (port 8000) et `npm run dev` (port 5173).
 
 ---
 
 ## 🧪 Tests & Qualité
 
-Nous maintenons une "Quality Gate" stricte pour assurer la fiabilité des comportements de l'essaim.
+La robustesse du système est garantie par une suite de tests complète couvrant tous les niveaux de l'application.
 
-### 📊 Suite de tests
-- **Unitaires (Backend)** : `pytest Test/`
-- **Unitaires (Frontend)** : `npm run test` (Vitest)
-- **Typage** : `mypy Code/Backend`
-- **Couverture** : `pytest --cov=Code/Backend` (Objectif > 95%)
+### 📐 Pyramide des Tests
+```mermaid
+graph BT
+    U[Unit Tests: Pytest/Vitest] --> I[Integration: API/WebSocket]
+    I --> E[E2E: Simulation Scenarios]
+    E --> Q[Quality: Sonar/Mypy/Lint]
+    
+    style U fill:#c8e6c9
+    style I fill:#fff9c4
+    style E fill:#ffccbc
+    style Q fill:#e1f5fe
+```
 
-### 🛡️ SonarQube
-Le projet est prêt pour l'analyse Sonar via le fichier `sonar-project.properties`.
+### Commandes utiles :
+- `pytest Test/` : Lance les tests unitaires backend.
+- `npm run test` : Lance les tests unitaires frontend.
+- `mypy Code/Backend` : Vérification du typage statique.
+
+---
+
+## 📖 Documentation
+
+Consultez la documentation technique complète générée via **Sphinx** pour plus de détails sur les classes et algorithmes.
+
 ```bash
-sonar-scanner
+cd Doc/sphinx
+make html
 ```
 
 ---
 
 ## 🗺 Roadmap
-- [ ] **Phase 1** : Amélioration de la physique hydrodynamique (turbulences).
-- [ ] **Phase 2** : Intégration de modèles de drones hétérogènes (Drones-Mères, Mini-Scouts).
-- [ ] **Phase 3** : Déploiement sur hardware réel (ROS2 / ESP32-Sub).
+- [ ] **2024.Q4** : Support Multi-Swarm (Flottes adverses).
+- [ ] **2025.Q1** : Intégration de modèles de drones 3D complexes.
+- [ ] **2025.Q2** : Déploiement Cloud (Docker/K8s).
 
 ---
 *Développé avec ❤️ pour l'innovation sous-marine.*
