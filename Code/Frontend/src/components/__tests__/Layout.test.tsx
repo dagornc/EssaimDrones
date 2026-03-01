@@ -10,6 +10,7 @@ vi.mock('../../hooks/useWebSocket', () => ({
     useWebSocket: () => ({
         data: { drones: [1, 2] },
         isConnected: true,
+        connectionState: 'connected',
         metricsHistory: [],
         sendMessage: vi.fn(),
     })
@@ -64,7 +65,7 @@ describe('Layout', () => {
         // 0 is in sidebar, 1 could be mobile. Clicking the sidebar one.
         await user.click(chatButtons[0]);
 
-        expect(screen.getByText('Agent Orchestrateur')).toBeInTheDocument();
+        expect(screen.getByText('agent_orchestrator')).toBeInTheDocument();
 
         // Close chat
         await user.click(screen.getByLabelText('Close chat'));

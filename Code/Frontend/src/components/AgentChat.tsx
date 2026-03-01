@@ -63,7 +63,7 @@ export default function AgentChat({ open, onClose }: AgentChatProps) {
             <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
                     <Cpu className="w-5 h-5" />
-                    <span className="font-semibold text-sm">Agent Orchestrateur</span>
+                    <span className="font-semibold text-sm">{t('agent_orchestrator', 'Agent Orchestrateur')}</span>
                 </div>
                 <button
                     onClick={onClose}

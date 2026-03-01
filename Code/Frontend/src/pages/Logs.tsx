@@ -12,17 +12,26 @@ interface LogEntry {
 }
 
 const MAX_LOG_ENTRIES = 200;
-let logIdCounter = 0;
 
 export default function Logs() {
     const { t } = useTranslation();
     const { data, isConnected } = useOutletContext<OutletContextType>();
     const [logs, setLogs] = useState<LogEntry[]>([]);
     const [searchFilter, setSearchFilter] = useState('');
+    const [debouncedSearchFilter, setDebouncedSearchFilter] = useState('');
     const [autoScroll, setAutoScroll] = useState(true);
     const scrollRef = useRef<HTMLDivElement>(null);
     const prevMode = useRef<string | null>(null);
     const prevConnected = useRef<boolean | null>(null);
+    const logIdCounter = useRef(0);
+
+    // Debounce search filter
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearchFilter(searchFilter);
+        }, 300);
+        return () => clearTimeout(handler);
+    }, [searchFilter]);
 
     // Track connection state changes
     useEffect(() => {
@@ -33,7 +42,7 @@ export default function Logs() {
         if (isConnected !== prevConnected.current) {
             prevConnected.current = isConnected;
             const entry: LogEntry = {
-                id: ++logIdCounter,
+                id: ++logIdCounter.current,
                 timestamp: new Date(),
                 type: isConnected ? 'connect' : 'disconnect',
                 message: isConnected ? t('ws_connected') : t('ws_disconnected'),
@@ -47,7 +56,7 @@ export default function Logs() {
         if (!data) return;
         if (prevMode.current !== null && data.mode !== prevMode.current) {
             const entry: LogEntry = {
-                id: ++logIdCounter,
+                id: ++logIdCounter.current,
                 timestamp: new Date(),
                 type: 'mode_change',
                 message: `${t('mode_changed')}: ${prevMode.current} → ${data.mode}`,
@@ -66,7 +75,7 @@ export default function Logs() {
         lastDataLog.current = now;
 
         const entry: LogEntry = {
-            id: ++logIdCounter,
+            id: ++logIdCounter.current,
             timestamp: new Date(),
             type: 'data',
             message: `[WS] drones=${data.drones.length} mode=${data.mode} cohesion=${data.metrics.cohesion?.toFixed(2)} alignment=${data.metrics.alignment?.toFixed(2)} safety=${data.metrics.safety}`,
@@ -82,10 +91,10 @@ export default function Logs() {
     }, [logs, autoScroll]);
 
     const filtered = useMemo(() => {
-        if (!searchFilter) return logs;
-        const lower = searchFilter.toLowerCase();
+        if (!debouncedSearchFilter) return logs;
+        const lower = debouncedSearchFilter.toLowerCase();
         return logs.filter(l => l.message.toLowerCase().includes(lower) || l.type.includes(lower));
-    }, [logs, searchFilter]);
+    }, [logs, debouncedSearchFilter]);
 
     const typeColors: Record<LogEntry['type'], string> = {
         data: 'text-slate-400',

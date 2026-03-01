@@ -22,7 +22,7 @@ describe('AgentChat Component', () => {
 
     it('renders correctly when open', () => {
         render(<AgentChat open={true} onClose={mockOnClose} />);
-        expect(screen.getByText('Agent Orchestrateur')).toBeInTheDocument();
+        expect(screen.getByText('agent_orchestrator')).toBeInTheDocument();
         expect(screen.getByText('agent_welcome')).toBeInTheDocument(); // from mock translation
     });
 

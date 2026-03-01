@@ -12,18 +12,19 @@ from typing import Any
 
 import httpx
 from dotenv import load_dotenv
-
-load_dotenv(override=True)
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
+from pydantic import BaseModel
 
 from api.database import (delete_custom_provider, init_db,
                           list_custom_providers, save_custom_provider)
 from api.llm_config import get_llm_config
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from underwater_swarm.config import SwarmMode
 from underwater_swarm.metrics import PerformanceMonitor
 from underwater_swarm.simulation import Simulation
+
+load_dotenv(override=True)
 
 
 class CustomProviderRequest(BaseModel):
@@ -92,7 +93,9 @@ async def broadcast_loop() -> None:
                 ),
                 "obstacles": (
                     [obs.position.tolist() for obs in sim.environment.obstacles]
-                    if hasattr(sim, "environment") and hasattr(sim.environment, "obstacles") and sim.environment.obstacles
+                    if hasattr(sim, "environment")
+                    and hasattr(sim.environment, "obstacles")
+                    and sim.environment.obstacles
                     else []
                 ),
             }
@@ -160,9 +163,6 @@ app.add_middleware(
 )
 
 
-from fastapi.responses import RedirectResponse
-
-
 @app.get("/")
 def read_root() -> RedirectResponse:
     """Redirect root to frontend."""
@@ -200,7 +200,8 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
                 elif entity_type == "obstacle":
                     from underwater_swarm.environment import Obstacle
                     # Environment is accessible via sim.environment
-                    sim.environment.obstacles.append(Obstacle(np.array(pos), radius=5.0))
+                    obs = Obstacle(np.array(pos), radius=5.0)
+                    sim.environment.obstacles.append(obs)
             elif "action" in payload and payload["action"] == "set_num_drones":
                 new_num = payload.get("value", 20)
                 sim.set_num_drones(new_num)
@@ -303,7 +304,9 @@ async def switch_model(req: ModelSwitchRequest) -> dict[str, str]:
     # Check custom providers if not in config
     if not provider_config:
         custom_provs = await list_custom_providers()
-        custom = next((p for p in custom_provs if p["name"] == req.provider), None)
+        custom = next(
+            (p for p in custom_provs if p["name"] == req.provider), None
+        )
         if custom:
             provider_config = dict(custom)  # Convert row to dict
 
@@ -333,7 +336,8 @@ async def switch_model(req: ModelSwitchRequest) -> dict[str, str]:
                 },
             )
             orchestrator.llm = new_llm
-            orchestrator.llm_with_tools = new_llm.bind_tools(orchestrator.tools)
+            tools = orchestrator.tools
+            orchestrator.llm_with_tools = new_llm.bind_tools(tools)
             print(f"LLM hot-swapped to {req.provider}/{req.model}")
         except Exception as e:
             return {"error": f"LLM swap failed: {e}"}
@@ -361,12 +365,17 @@ async def test_model_connection(
 
     if not provider_config:
         custom_provs = await list_custom_providers()
-        custom = next((p for p in custom_provs if p["name"] == req.provider), None)
+        custom = next(
+            (p for p in custom_provs if p["name"] == req.provider), None
+        )
         if custom:
             provider_config = dict(custom)
 
     if not provider_config:
-        return {"success": False, "message": f"Provider '{req.provider}' not found."}
+        return {
+            "success": False,
+            "message": f"Provider '{req.provider}' not found."
+        }
 
     base_url = str(provider_config.get("base_url", ""))
     api_key = str(provider_config.get("api_key", ""))
@@ -430,9 +439,11 @@ async def fetch_provider_models(provider_name: str) -> list[str]:
             data = response.json()
 
             if isinstance(data, dict) and "data" in data:
-                return sorted(
-                    [m["id"] for m in data["data"] if isinstance(m, dict) and "id" in m]
-                )
+                ids = [
+                    m["id"] for m in data["data"]
+                    if isinstance(m, dict) and "id" in m
+                ]
+                return sorted(ids)
             if isinstance(data, list):
                 return sorted(
                     [m["id"] if isinstance(m, dict) else str(m) for m in data]

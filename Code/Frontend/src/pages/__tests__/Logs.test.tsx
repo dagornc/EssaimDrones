@@ -121,6 +121,10 @@ describe('Logs', () => {
         const searchInput = screen.getByLabelText('Filter logs');
         fireEvent.change(searchInput, { target: { value: 'disconnected' } });
 
+        act(() => {
+            vi.advanceTimersByTime(300);
+        });
+
         // wait for filter
         expect(screen.queryByText('ws_connected')).not.toBeInTheDocument();
         expect(screen.getByText('ws_disconnected')).toBeInTheDocument();
@@ -154,6 +158,10 @@ describe('Logs', () => {
 
         const searchInput = screen.getByLabelText('Filter logs');
         fireEvent.change(searchInput, { target: { value: 'NOMATCH123' } });
+
+        act(() => {
+            vi.advanceTimersByTime(300);
+        });
 
         expect(screen.getByText('No matching entries')).toBeInTheDocument();
 

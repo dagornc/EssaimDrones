@@ -1,58 +1,70 @@
-import { useRef, useMemo, useState, Suspense, useEffect, useCallback } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useRef, useMemo, useState, Suspense, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
+import { Canvas, extend, useFrame, useThree } from '@react-three/fiber';
 import { useOutletContext } from 'react-router-dom';
 import type { SimulationData, OutletContextType, DronePosition } from '../types/simulation';
 import { useTranslation } from 'react-i18next';
 import { Maximize2 } from 'lucide-react';
 import * as THREE from 'three';
-import { OrbitControls as ThreeOrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 
-/* ── OrbitControls wrapper (no drei needed) ──────────────────── */
-function OrbitControlsComponent({ controlsRef }: { controlsRef: React.MutableRefObject<ThreeOrbitControls | null> }) {
+extend({ OrbitControls: OrbitControlsImpl });
+
+const CustomOrbitControls = forwardRef<OrbitControlsImpl, any>((props, ref) => {
     const { camera, gl } = useThree();
+    const controls = useMemo(() => new OrbitControlsImpl(camera, gl.domElement), [camera, gl.domElement]);
+
+    // Ensure ref correctly gets controls instance regardless of R3F primitive handling in tests
+    // Using any because of TypeScript issues with useImperativeHandle
+    (useImperativeHandle as any)(ref, () => controls, [controls]);
+
+    useFrame(() => controls.update());
 
     useEffect(() => {
-        const controls = new ThreeOrbitControls(camera, gl.domElement);
-        controls.target.set(50, 30, 50);
-        controls.maxPolarAngle = Math.PI / 2;
-        controls.minDistance = 20;
-        controls.maxDistance = 200;
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controlsRef.current = controls;
+        if (props.target && Array.isArray(props.target)) {
+            controls.target.set(props.target[0], props.target[1], props.target[2]);
+        }
+        if (props.maxPolarAngle !== undefined) controls.maxPolarAngle = props.maxPolarAngle;
+        if (props.minDistance !== undefined) controls.minDistance = props.minDistance;
+        if (props.maxDistance !== undefined) controls.maxDistance = props.maxDistance;
+        if (props.enableDamping !== undefined) controls.enableDamping = props.enableDamping;
+        if (props.dampingFactor !== undefined) controls.dampingFactor = props.dampingFactor;
+        controls.update();
+    }, [props, controls]);
 
-        return () => { controls.dispose(); };
-    }, [camera, gl, controlsRef]);
+    useEffect(() => {
+        return () => controls.dispose();
+    }, [controls]);
 
-    useFrame(() => { controlsRef.current?.update(); });
-    return null;
+    return <primitive object={controls} />;
+});
+
+/* ── Drone Component ───────────────────────────────────────────── */
+function Drone({ position }: { position: DronePosition }) {
+    const pos = useMemo<[number, number, number]>(() => [position[0], position[2] || 50, position[1]], [position]);
+    return (
+        <group position={pos}>
+            {/* Main Body */}
+            <mesh rotation={[-Math.PI / 2, 0, 0]}>
+                <coneGeometry args={[0.8, 2.5, 12]} />
+                <meshStandardMaterial color="#06b6d4" emissive="#06b6d4" emissiveIntensity={0.8} />
+            </mesh>
+            {/* Core engine glow */}
+            <mesh position={[0, 0, 1.2]}>
+                <sphereGeometry args={[0.4, 8, 8]} />
+                <meshBasicMaterial color="#ffffff" />
+            </mesh>
+            <pointLight distance={15} intensity={0.8} color="#06b6d4" />
+        </group>
+    );
 }
 
-/* ── Drone Instances ─────────────────────────────────────────── */
+/* ── Drone Swarm ─────────────────────────────────────────────── */
 function DroneSwarm({ positions }: { positions: DronePosition[] }) {
-    const meshRef = useRef<THREE.InstancedMesh>(null!);
-    const dummy = useMemo(() => new THREE.Object3D(), []);
-    const color = useMemo(() => new THREE.Color('#06b6d4'), []);
-
-    useFrame(() => {
-        if (!meshRef.current || positions.length === 0) return;
-        positions.forEach((p, i) => {
-            dummy.position.set(p[0], p[2] || 50, p[1]);
-            dummy.updateMatrix();
-            meshRef.current.setMatrixAt(i, dummy.matrix);
-            meshRef.current.setColorAt(i, color);
-        });
-        meshRef.current.instanceMatrix.needsUpdate = true;
-        if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true;
-    });
-
     if (positions.length === 0) return null;
-
     return (
-        <instancedMesh ref={meshRef} args={[undefined, undefined, Math.max(positions.length, 1)]}>
-            <sphereGeometry args={[0.8, 12, 12]} />
-            <meshStandardMaterial color="#06b6d4" emissive="#06b6d4" emissiveIntensity={0.4} transparent opacity={0.9} />
-        </instancedMesh>
+        <group>
+            {positions.map((p, i) => <Drone key={`drone-${i}`} position={p} />)}
+        </group>
     );
 }
 
@@ -92,14 +104,20 @@ function OceanFloorGrid() {
 }
 
 /* ── Scene ───────────────────────────────────────────────────── */
-function Scene({ data, controlsRef }: { data: SimulationData; controlsRef: React.MutableRefObject<ThreeOrbitControls | null> }) {
+function Scene({ data, controlsRef }: { data: SimulationData; controlsRef: React.MutableRefObject<OrbitControlsImpl | null> }) {
     return (
         <>
-            <ambientLight intensity={0.3} />
-            <directionalLight position={[50, 100, 50]} intensity={0.5} />
-            <pointLight position={[50, 50, 50]} intensity={0.3} color="#06b6d4" />
+            <ambientLight intensity={0.8} color="#bacde8" />
+            <directionalLight position={[50, 100, 50]} intensity={0.6} color="#e0f2fe" />
 
             <OceanFloorGrid />
+
+            {/* Simple dark square instead of ContactShadows */}
+            <mesh position={[50, 0.05, 50]} rotation={[-Math.PI / 2, 0, 0]}>
+                <planeGeometry args={[150, 150]} />
+                <meshBasicMaterial color="#020617" transparent opacity={0.5} depthWrite={false} />
+            </mesh>
+
             <DroneSwarm positions={data.drones} />
 
             {data.targets?.map((t, i) => (
@@ -112,8 +130,16 @@ function Scene({ data, controlsRef }: { data: SimulationData; controlsRef: React
                 <Marker key={`o-${i}`} position={o} color="#94a3b8" shape="sphere" />
             ))}
 
-            <OrbitControlsComponent controlsRef={controlsRef} />
-            <fog attach="fog" args={['#060d18', 80, 250]} />
+            <CustomOrbitControls
+                ref={controlsRef}
+                target={[50, 30, 50]}
+                maxPolarAngle={Math.PI / 2}
+                minDistance={20}
+                maxDistance={200}
+                enableDamping
+                dampingFactor={0.05}
+            />
+            <fog attach="fog" args={['#030a15', 60, 250]} />
         </>
     );
 }
@@ -179,7 +205,24 @@ export default function TacticalViewport() {
     const [viewMode, setViewMode] = useState<'3d' | '2d'>('3d');
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [depthValue, setDepthValue] = useState(50);
-    const controlsRef = useRef<ThreeOrbitControls | null>(null);
+    const controlsRef = useRef<OrbitControlsImpl | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    }, []);
+
+    const toggleFullscreen = async () => {
+        if (!document.fullscreenElement) {
+            await containerRef.current?.requestFullscreen();
+        } else {
+            await document.exitFullscreen();
+        }
+    };
 
     const handleResetCamera = useCallback(() => {
         if (controlsRef.current) {
@@ -200,7 +243,7 @@ export default function TacticalViewport() {
     return (
         <div className="flex h-full">
             {/* 3D/2D Canvas */}
-            <div className={`flex-1 relative bg-[#030a15] ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
+            <div ref={containerRef} className={`flex-1 relative bg-[#030a15] ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
                 {viewMode === '3d' ? (
                     <Suspense fallback={
                         <div className="flex items-center justify-center h-full bg-[#030a15] text-cyan-500">
@@ -227,7 +270,7 @@ export default function TacticalViewport() {
                 )}
 
                 <button
-                    onClick={() => setIsFullscreen(!isFullscreen)}
+                    onClick={toggleFullscreen}
                     className="absolute top-4 right-4 p-2 bg-slate-900/80 backdrop-blur-sm text-cyan-400 border border-slate-700 rounded-lg hover:bg-slate-800 transition-all z-10"
                     aria-label="Toggle fullscreen"
                 >

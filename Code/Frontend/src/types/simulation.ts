@@ -13,6 +13,8 @@ export interface Metrics {
     safety: number;
 }
 
+export type ConnectionState = 'connecting' | 'connected' | 'reconnecting' | 'offline';
+
 /** A single snapshot of the simulation state sent over WebSocket. */
 export interface SimulationData {
     mode: string;
@@ -35,6 +37,7 @@ export interface MetricsSnapshot {
 export interface OutletContextType {
     data: SimulationData | null;
     isConnected: boolean;
+    connectionState: ConnectionState;
     metricsHistory: MetricsSnapshot[];
     sendMessage: (msg: string) => void;
     simulationMode: boolean;

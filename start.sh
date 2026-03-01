@@ -42,41 +42,39 @@ if [ ! -f ".env" ]; then
     exit 1
 fi
 
-# Charger les variables du .env (sans échouer si vide, ignorant les commentaires)
-export $(grep -v '^#' .env | xargs)
+# Charger les variables du .env (compatible avec les valeurs contenant des espaces)
+set -a
+[ -f .env ] && source .env
+set +a
 
 if [ -z "$OPENROUTER_API_KEY" ]; then
-    echo "❌ Erreur: OPENROUTER_API_KEY n'est pas définie dans .env"
-    exit 1
+    echo "⚠️ Attention: OPENROUTER_API_KEY n'est pas définie dans .env"
+    echo "L'Orchestrateur Intelligence Artificielle sera inactif. Configurez la clé dans l'UI."
+else
+    MODEL="${LLM_MODEL:-meta-llama/llama-3.3-70b-instruct:free}"
+    echo "Test du modèle en cours : $MODEL..."
+
+    # Test API OpenRouter
+    HTTP_STATUS=$(curl -s -o /tmp/openrouter_test.json -w "%{http_code}" \
+      -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"model\": \"$MODEL\", \"messages\": [{\"role\": \"user\", \"content\": \"ping\"}]}" \
+      "https://openrouter.ai/api/v1/chat/completions")
+
+    if [ "$HTTP_STATUS" -ne 200 ]; then
+        echo "⚠️ Échec de la connexion LLM (HTTP $HTTP_STATUS) - Modèle possiblement surchargé ou clé non valide."
+        cat /tmp/openrouter_test.json 2>/dev/null
+        echo ""
+        echo "L'application démarrera quand même. Veuillez vérifier votre modèle depuis l'Interface Utilisateur."
+    elif grep -q '"error"' /tmp/openrouter_test.json 2>/dev/null; then
+        echo "⚠️ Échec API de la connexion LLM:"
+        cat /tmp/openrouter_test.json 2>/dev/null
+        echo ""
+        echo "L'application démarrera quand même. Veuillez vérifier votre modèle ou clé dans UI."
+    else
+        echo "✅ Test de connexion LLM réussi!"
+    fi
 fi
-
-MODEL="${LLM_MODEL:-meta-llama/llama-3.3-70b-instruct:free}"
-echo "Test du modèle en cours : $MODEL..."
-
-# Test API OpenRouter
-HTTP_STATUS=$(curl -s -o /tmp/openrouter_test.json -w "%{http_code}" \
-  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "{\"model\": \"$MODEL\", \"messages\": [{\"role\": \"user\", \"content\": \"ping\"}]}" \
-  "https://openrouter.ai/api/v1/chat/completions")
-
-if [ "$HTTP_STATUS" -ne 200 ]; then
-    echo "❌ Échec de la connexion LLM (HTTP $HTTP_STATUS)"
-    cat /tmp/openrouter_test.json
-    echo ""
-    echo "Veuillez vérifier votre OPENROUTER_API_KEY et le modèle défini dans .env."
-    exit 1
-fi
-
-# Vérification rapide si la réponse comporte une erreur côté OpenRouter (ex. User not found, No endpoints...)
-if grep -q '"error"' /tmp/openrouter_test.json; then
-    echo "❌ Échec API de la connexion LLM:"
-    cat /tmp/openrouter_test.json
-    echo ""
-    exit 1
-fi
-
-echo "✅ Test de connexion LLM réussi!"
 
 
 # 4. Lancement asynchrone Backend & Frontend
@@ -96,14 +94,14 @@ sleep 3
 # 5. Lancement de Google Chrome sur l'application
 echo "🌐 Ouverture de l'application sous Google Chrome..."
 if command -v google-chrome &> /dev/null; then
-    google-chrome "http://localhost:8000" &
+    google-chrome "http://localhost:5173" &
 elif command -v google-chrome-stable &> /dev/null; then
-    google-chrome-stable "http://localhost:8000" &
+    google-chrome-stable "http://localhost:5173" &
 elif [ "$(uname)" == "Darwin" ]; then
     # MacOS
-    open -a "Google Chrome" "http://localhost:8000" &
+    open -a "Google Chrome" "http://localhost:5173" &
 else
-    echo "⚠️ Google Chrome non trouvé. Veuillez ouvrir manuellement http://localhost:8000"
+    echo "⚠️ Google Chrome non trouvé. Veuillez ouvrir manuellement http://localhost:5173"
 fi
 
 echo "✅ Application démarrée."

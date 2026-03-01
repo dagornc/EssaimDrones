@@ -32,9 +32,28 @@ vi.mock('three/examples/jsm/controls/OrbitControls.js', () => {
     };
 });
 
+// Mock three-stdlib OrbitControls
+vi.mock('three-stdlib', () => {
+    const r = require('react');
+    return {
+        OrbitControls: class {
+            target = { set: vi.fn() };
+            enableDamping = false;
+            dampingFactor = 0;
+            maxPolarAngle = 0;
+            minDistance = 0;
+            maxDistance = 0;
+            update = vi.fn();
+            dispose = vi.fn();
+            reset = vi.fn();
+        }
+    };
+});
+
 // Mock @react-three/fiber
 vi.mock('@react-three/fiber', () => {
     return {
+        extend: vi.fn(),
         Canvas: ({ children }: any) => <div data-testid="canvas">{children}</div>,
         useFrame: (cb: any) => {
             // Call it immediately on mount within useEffect so refs are assigned
@@ -54,6 +73,8 @@ Object.defineProperty(HTMLElement.prototype, 'setMatrixAt', { value: vi.fn(), wr
 Object.defineProperty(HTMLElement.prototype, 'setColorAt', { value: vi.fn(), writable: true });
 Object.defineProperty(HTMLElement.prototype, 'instanceMatrix', { value: { needsUpdate: false }, writable: true });
 Object.defineProperty(HTMLElement.prototype, 'instanceColor', { value: { needsUpdate: false }, writable: true });
+Object.defineProperty(HTMLElement.prototype, 'requestFullscreen', { value: vi.fn().mockResolvedValue(undefined), writable: true });
+document.exitFullscreen = vi.fn().mockResolvedValue(undefined);
 
 describe('TacticalViewport', () => {
     beforeEach(() => {

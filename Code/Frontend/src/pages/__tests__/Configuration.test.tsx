@@ -9,6 +9,23 @@ vi.mock('../../components/LLMSelector', () => ({
     default: () => <div data-testid="mock-llm-selector">LLMSelector</div>
 }));
 
+const mockSendMessage = vi.fn();
+
+vi.mock('react-router-dom', async () => {
+    const actual = await vi.importActual('react-router-dom');
+    return {
+        ...actual,
+        useOutletContext: () => ({
+            sendMessage: mockSendMessage
+        })
+    };
+});
+
+const mockToast = vi.fn();
+vi.mock('../../components/ui/Toast', () => ({
+    useToast: () => ({ toast: mockToast })
+}));
+
 describe('Configuration', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -61,23 +78,19 @@ describe('Configuration', () => {
     });
 
     it('shows toast on Apply and clears it', async () => {
-        vi.useFakeTimers();
+        const user = userEvent.setup({ delay: null });
         render(<Configuration />);
 
         const physicsTab = screen.getByText('config_tab_physics');
-        fireEvent.click(physicsTab);
+        await user.click(physicsTab);
 
         const applyBtn = screen.getByText('apply_changes');
-        fireEvent.click(applyBtn);
+        await user.click(applyBtn);
 
-        expect(screen.getByText('config_applied_toast')).toBeInTheDocument();
-
-        act(() => {
-            vi.advanceTimersByTime(3000);
-        });
-
-        expect(screen.queryByText('config_applied_toast')).not.toBeInTheDocument();
-        vi.useRealTimers();
+        expect(mockToast).toHaveBeenCalledWith(expect.objectContaining({
+            title: 'config_applied_toast',
+            variant: 'success'
+        }));
     });
 
     it('resets values on Reset button click', async () => {

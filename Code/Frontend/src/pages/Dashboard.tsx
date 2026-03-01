@@ -5,8 +5,28 @@ import { XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveCont
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../components/ui/Toast';
 import { HelpDialog } from '../components/ui/HelpDialog';
-import { useMemo } from 'react';
+import { useMemo, useId, useState } from 'react';
 import type { DronePosition } from '../types/simulation';
+import { motion } from 'framer-motion';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+/* ── Sortable KPI Card ───────────────────────────────────────── */
+function SortableKpiCard({ id, children, className }: { id: string, children: React.ReactNode, className?: string }) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        zIndex: isDragging ? 10 : 1,
+        opacity: isDragging ? 0.8 : 1,
+    };
+    return (
+        <div ref={setNodeRef} style={style} className={`cursor-grab active:cursor-grabbing ${className}`} {...attributes} {...listeners}>
+            {children}
+        </div>
+    );
+}
 
 const MODES = [
     { id: 'PATROL', label: 'PATROL', color: 'bg-cyan-500' },
@@ -25,6 +45,25 @@ export default function Dashboard() {
     const { t } = useTranslation();
     const { data, metricsHistory, sendMessage } = useOutletContext<OutletContextType>();
     const { toast } = useToast();
+    const cohId = useId();
+    const aliId = useId();
+
+    // DND State for KPIs
+    const [kpiOrder, setKpiOrder] = useState(['active_drones', 'current_mode', 'cohesion_index', 'safety_violations']);
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    );
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+        if (over && active.id !== over.id) {
+            setKpiOrder((items) => {
+                const oldIndex = items.indexOf(active.id as string);
+                const newIndex = items.indexOf(over.id as string);
+                return arrayMove(items, oldIndex, newIndex);
+            });
+        }
+    };
 
     // Use real metrics history for chart data, fallback to current snapshot if history is short
     // Moved above early return to respect React Rules of Hooks
@@ -55,6 +94,7 @@ export default function Dashboard() {
     }
 
     const activeDrones = data.drones?.length || 0;
+    const maxDrones = data.max_drones || data.config?.max_drones || 50;
 
     const handleModeSwitch = (modeId: string) => {
         sendMessage(JSON.stringify({ mode: modeId }));
@@ -65,61 +105,82 @@ export default function Dashboard() {
         });
     };
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+        }
+    };
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } }
+    };
+
+    const kpiElements: Record<string, React.ReactNode> = {
+        'active_drones': (
+            <SortableKpiCard key="active_drones" id="active_drones" className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm h-full">
+                <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 select-none">{t('active_drones')}</h3>
+                <div className="flex items-end justify-between select-none">
+                    <span className="text-4xl font-light text-slate-900 dark:text-white">{activeDrones}<span className="text-lg text-slate-500">/{maxDrones}</span></span>
+                    <span className="text-cyan-500 text-sm font-bold tracking-wide">{t('stable')}</span>
+                </div>
+                <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 mt-4 rounded-full overflow-hidden">
+                    <div className="bg-cyan-500 h-full rounded-full" style={{ width: `${(activeDrones / maxDrones) * 100}%` }}></div>
+                </div>
+            </SortableKpiCard>
+        ),
+        'current_mode': (
+            <SortableKpiCard key="current_mode" id="current_mode" className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm relative overflow-hidden h-full">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)]"></div>
+                <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 pl-2 select-none">{t('current_mode')}</h3>
+                <div className="flex items-center justify-between pl-2 select-none">
+                    <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{data.mode}</span>
+                    <ShieldAlert className="text-cyan-500 w-6 h-6 opacity-80" />
+                </div>
+            </SortableKpiCard>
+        ),
+        'cohesion_index': (
+            <SortableKpiCard key="cohesion_index" id="cohesion_index" className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm h-full">
+                <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 select-none">{t('cohesion_index')}</h3>
+                <div className="flex items-center justify-between pointer-events-none">
+                    <span className="text-4xl font-light text-slate-900 dark:text-white font-mono select-none">{data.metrics.cohesion?.toFixed(2) || '0.00'}</span>
+                    <div className="relative w-10 h-10 select-none">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path className="stroke-slate-200 dark:stroke-slate-800 fill-none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" strokeWidth="3"></path>
+                            <path className="stroke-cyan-500 fill-none transition-all duration-500 ease-out" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" strokeDasharray={`${Math.min(100, Math.max(0, (data.metrics.cohesion || 0) * 20))}, 100`} strokeWidth="3"></path>
+                        </svg>
+                    </div>
+                </div>
+            </SortableKpiCard>
+        ),
+        'safety_violations': (
+            <SortableKpiCard key="safety_violations" id="safety_violations" className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm h-full">
+                <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 select-none">{t('safety_violations')}</h3>
+                <div className="flex items-center justify-between select-none">
+                    <span className="text-4xl font-light text-slate-900 dark:text-white">{data.metrics.safety || 0}</span>
+                    <div className="w-8 h-8 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </div>
+            </SortableKpiCard>
+        )
+    };
+
     return (
-        <div className="p-6 max-h-full overflow-auto space-y-6">
+        <motion.div className="p-6 max-h-full overflow-auto space-y-6" variants={containerVariants} initial="hidden" animate="show">
 
             {/* Top row: KPIs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Active Drones */}
-                <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
-                    <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{t('active_drones')}</h3>
-                    <div className="flex items-end justify-between">
-                        <span className="text-4xl font-light text-slate-900 dark:text-white">{activeDrones}<span className="text-lg text-slate-500">/50</span></span>
-                        <span className="text-cyan-500 text-sm font-bold tracking-wide">{t('stable')}</span>
-                    </div>
-                    <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 mt-4 rounded-full overflow-hidden">
-                        <div className="bg-cyan-500 h-full rounded-full" style={{ width: `${(activeDrones / 50) * 100}%` }}></div>
-                    </div>
-                </div>
-
-                {/* Current Mode */}
-                <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm relative overflow-hidden">
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)]"></div>
-                    <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 pl-2">{t('current_mode')}</h3>
-                    <div className="flex items-center justify-between pl-2">
-                        <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{data.mode}</span>
-                        <ShieldAlert className="text-cyan-500 w-6 h-6 opacity-80" />
-                    </div>
-                </div>
-
-                {/* Cohesion Index */}
-                <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
-                    <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{t('cohesion_index')}</h3>
-                    <div className="flex items-center justify-between">
-                        <span className="text-4xl font-light text-slate-900 dark:text-white font-mono">{data.metrics.cohesion?.toFixed(2) || '0.00'}</span>
-                        <div className="relative w-10 h-10">
-                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                                <path className="stroke-slate-200 dark:stroke-slate-800 fill-none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" strokeWidth="3"></path>
-                                <path className="stroke-cyan-500 fill-none transition-all duration-500 ease-out" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" strokeDasharray={`${Math.min(100, Math.max(0, (data.metrics.cohesion || 0) * 20))}, 100`} strokeWidth="3"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Safety Violations */}
-                <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
-                    <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{t('safety_violations')}</h3>
-                    <div className="flex items-center justify-between">
-                        <span className="text-4xl font-light text-slate-900 dark:text-white">{data.metrics.safety || 0}</span>
-                        <div className="w-8 h-8 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                    <SortableContext items={kpiOrder} strategy={rectSortingStrategy}>
+                        {kpiOrder.map(id => kpiElements[id])}
+                    </SortableContext>
+                </DndContext>
+            </motion.div>
 
             {/* Middle Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 {/* 2D Mini Viewport (60%) */}
                 <div className="lg:col-span-2 bg-slate-900 rounded-2xl border border-slate-800 p-1 relative overflow-hidden shadow-lg h-[400px]">
@@ -187,10 +248,10 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-            </div>
+            </motion.div>
 
             {/* Bottom Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 {/* Performance Metrics Chart */}
                 <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
@@ -220,11 +281,11 @@ export default function Dashboard() {
                         <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={100}>
                             <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                 <defs>
-                                    <linearGradient id="colorCohesion" x1="0" y1="0" x2="0" y2="1">
+                                    <linearGradient id={cohId} x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.4} />
                                         <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
                                     </linearGradient>
-                                    <linearGradient id="colorAlignment" x1="0" y1="0" x2="0" y2="1">
+                                    <linearGradient id={aliId} x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#4ade80" stopOpacity={0.4} />
                                         <stop offset="95%" stopColor="#4ade80" stopOpacity={0} />
                                     </linearGradient>
@@ -237,8 +298,8 @@ export default function Dashboard() {
                                     itemStyle={{ color: '#94a3b8' }}
                                     cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '4 4' }}
                                 />
-                                <Area type="monotone" dataKey="cohesion" stroke="#06b6d4" strokeWidth={3} fillOpacity={1} fill="url(#colorCohesion)" activeDot={{ r: 6, strokeWidth: 0, fill: '#06b6d4' }} />
-                                <Area type="monotone" dataKey="alignment" stroke="#4ade80" strokeWidth={2} strokeDasharray="4 4" fillOpacity={1} fill="url(#colorAlignment)" activeDot={{ r: 5, strokeWidth: 0, fill: '#4ade80' }} />
+                                <Area type="monotone" dataKey="cohesion" stroke="#06b6d4" strokeWidth={3} fillOpacity={1} fill={`url(#${cohId})`} activeDot={{ r: 6, strokeWidth: 0, fill: '#06b6d4' }} />
+                                <Area type="monotone" dataKey="alignment" stroke="#4ade80" strokeWidth={2} strokeDasharray="4 4" fillOpacity={1} fill={`url(#${aliId})`} activeDot={{ r: 5, strokeWidth: 0, fill: '#4ade80' }} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
@@ -275,7 +336,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 }

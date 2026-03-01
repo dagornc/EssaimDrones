@@ -12,17 +12,6 @@ export default defineConfig({
       }
     }
   },
-  optimizeDeps: {
-    include: [
-      'three',
-      'three/examples/jsm/controls/OrbitControls.js',
-      '@react-three/fiber',
-      'react-router-dom',
-      'recharts',
-      'i18next',
-      'react-i18next',
-    ],
-  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
@@ -40,3 +29,4 @@ export default defineConfig({
     }
   }
 })
+// Force restart

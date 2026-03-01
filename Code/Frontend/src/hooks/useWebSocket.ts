@@ -17,6 +17,7 @@ const BACKOFF_FACTOR = 2;
 export function useWebSocket(url: string = 'ws://localhost:8000/ws') {
     const [data, setData] = useState<SimulationData | null>(null);
     const [isConnected, setIsConnected] = useState(false);
+    const [connectionState, setConnectionState] = useState<'connecting' | 'connected' | 'reconnecting' | 'offline'>('connecting');
     const [metricsHistory, setMetricsHistory] = useState<MetricsSnapshot[]>([]);
 
     const wsRef = useRef<WebSocket | null>(null);
@@ -59,12 +60,14 @@ export function useWebSocket(url: string = 'ws://localhost:8000/ws') {
             ws.onopen = () => {
                 if (!mountedRef.current) return;
                 setIsConnected(true);
+                setConnectionState('connected');
                 reconnectDelay.current = INITIAL_DELAY_MS;
             };
 
             ws.onclose = () => {
                 if (!mountedRef.current) return;
                 setIsConnected(false);
+                setConnectionState(reconnectDelay.current > INITIAL_DELAY_MS ? 'reconnecting' : 'offline');
                 wsRef.current = null;
 
                 // Schedule reconnect with exponential backoff
@@ -105,5 +108,5 @@ export function useWebSocket(url: string = 'ws://localhost:8000/ws') {
         };
     }, [url, pushMetrics]);
 
-    return { data, isConnected, metricsHistory, sendMessage };
+    return { data, isConnected, connectionState, metricsHistory, sendMessage };
 }

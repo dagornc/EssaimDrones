@@ -9,17 +9,22 @@ import PageTransition from './PageTransition';
 import OnboardingWizard from './OnboardingWizard';
 import AgentChat from './AgentChat';
 import PageHelp from './PageHelp';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import * as Dialog from '@radix-ui/react-dialog';
 
 export default function Layout() {
     const { t, i18n } = useTranslation();
     const location = useLocation();
     const { theme, setTheme } = useTheme();
-    const { data, isConnected, metricsHistory, sendMessage } = useWebSocket();
+    const { data, isConnected, connectionState, metricsHistory, sendMessage } = useWebSocket();
     const missionTime = useMissionTimer(isConnected);
     const [chatOpen, setChatOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [simulationMode, setSimulationMode] = useState(true);
+
+    useEffect(() => {
+        document.documentElement.lang = i18n.language;
+    }, [i18n.language]);
 
     const toggleSimulation = () => {
         setSimulationMode(prev => !prev);
@@ -126,13 +131,46 @@ export default function Layout() {
                     {/* Top Bar */}
                     <header className="h-14 bg-white/80 dark:bg-[#0d1f3c]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/50 flex justify-between items-center px-4 md:px-6 shrink-0 z-20">
                         {/* Mobile hamburger */}
-                        <button
-                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className="md:hidden p-2 text-slate-500 hover:text-slate-900 dark:hover:text-white"
-                            aria-label="Toggle menu"
-                        >
-                            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                        </button>
+                        <Dialog.Root open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                            <Dialog.Trigger asChild>
+                                <button
+                                    className="md:hidden p-2 text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                                    aria-label="Toggle menu"
+                                >
+                                    {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                                </button>
+                            </Dialog.Trigger>
+                            <Dialog.Portal>
+                                <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+                                <Dialog.Content className="fixed left-0 top-0 z-50 h-full w-3/4 max-w-sm bg-white dark:bg-[#0a1628] border-r border-slate-200 dark:border-slate-800 p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left duration-300">
+                                    <div className="flex flex-col gap-4">
+                                        <div className="flex items-center gap-2 mb-6 text-cyan-500">
+                                            <Activity className="w-8 h-8" />
+                                            <span className="font-bold text-lg text-slate-900 dark:text-white">AquaSwarm</span>
+                                        </div>
+                                        {navItems.map((item) => {
+                                            const active = location.pathname === item.path;
+                                            const Icon = item.icon;
+                                            return (
+                                                <Link
+                                                    key={item.path}
+                                                    to={item.path}
+                                                    onClick={() => setMobileMenuOpen(false)}
+                                                    className={`p-3 rounded-xl flex items-center gap-3 transition-all ${active
+                                                        ? 'bg-cyan-500/10 text-cyan-500 font-bold'
+                                                        : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50'
+                                                        }`}
+                                                >
+                                                    <Icon className="w-5 h-5" />
+                                                    {item.name}
+                                                </Link>
+                                            );
+                                        })}
+                                    </div>
+                                    <Dialog.Title className="sr-only">Menu principal</Dialog.Title>
+                                </Dialog.Content>
+                            </Dialog.Portal>
+                        </Dialog.Root>
 
                         {/* Breadcrumb */}
                         <div className="hidden md:flex items-center gap-2 text-sm">
@@ -162,13 +200,29 @@ export default function Layout() {
                         {/* Right Tools */}
                         <div className="flex items-center gap-2 md:gap-4">
                             {/* Drone Status Badge */}
-                            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 text-xs font-bold tracking-wide">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-                                </span>
-                                {activeDronesCount} {t('active_drones').toUpperCase()}
-                            </div>
+                            {connectionState === 'connected' ? (
+                                <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 text-xs font-bold tracking-wide">
+                                    <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                                    </span>
+                                    {activeDronesCount} {t('active_drones').toUpperCase()}
+                                </div>
+                            ) : (
+                                <div className={`hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold tracking-wide ${connectionState === 'connecting' || connectionState === 'reconnecting'
+                                        ? 'bg-amber-500/10 border border-amber-500/20 text-amber-500'
+                                        : 'bg-red-500/10 border border-red-500/20 text-red-500'
+                                    }`}>
+                                    <span className="relative flex h-2 w-2">
+                                        {(connectionState === 'connecting' || connectionState === 'reconnecting') && (
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                                        )}
+                                        <span className={`relative inline-flex rounded-full h-2 w-2 ${connectionState === 'connecting' || connectionState === 'reconnecting' ? 'bg-amber-500' : 'bg-red-500'
+                                            }`} />
+                                    </span>
+                                    {t(`ws_${connectionState}`, connectionState.toUpperCase())}
+                                </div>
+                            )}
 
                             <button className="text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 focus-visible:ring-2 focus-visible:ring-cyan-500 rounded-md p-1" aria-label="Notifications">
                                 <Bell className="w-4 h-4" />
@@ -224,9 +278,10 @@ export default function Layout() {
                         onClick={toggleSimulation}
                         className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${simulationMode ? 'text-amber-500' : 'text-emerald-500'}`}
                     >
-                        <Gamepad2 className="w-5 h-5 relative">
-                            {simulationMode ? <ToggleRight className="w-2.5 h-2.5 absolute -top-1 -right-2 tracking-tighter" /> : <ToggleLeft className="w-2.5 h-2.5 absolute -top-1 -right-2" />}
-                        </Gamepad2>
+                        <div className="relative">
+                            <Gamepad2 className="w-5 h-5" />
+                            {simulationMode ? <ToggleRight className="w-2.5 h-2.5 absolute -top-1 -right-2 tracking-tighter bg-white dark:bg-[#0a1628] rounded-full" /> : <ToggleLeft className="w-2.5 h-2.5 absolute -top-1 -right-2 bg-white dark:bg-[#0a1628] rounded-full" />}
+                        </div>
                         <span className="text-[9px] font-bold tracking-wider">SIMU</span>
                     </button>
                     <button
