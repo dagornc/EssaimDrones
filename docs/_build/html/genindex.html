@@ -7,14 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Index &mdash; EssaimDrones 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=8d563738"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -71,7 +71,8 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#A"><strong>A</strong></a>
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
@@ -91,6 +92,18 @@
  | <a href="#V"><strong>V</strong></a>
  
 </div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="underwater_swarm.html#underwater_swarm.simulation.Simulation.__init__">__init__() (underwater_swarm.simulation.Simulation method)</a>
+
+      <ul>
+        <li><a href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.__init__">(underwater_swarm.viz.LiveVisualizer method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -117,18 +130,32 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="underwater_swarm.html#underwater_swarm.environment.Environment.bounds">bounds (underwater_swarm.environment.Environment attribute)</a>
+
+      <ul>
+        <li><a href="underwater_swarm.html#underwater_swarm.safety.SafetyMonitor.bounds">(underwater_swarm.safety.SafetyMonitor attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="underwater_swarm.html#underwater_swarm.metrics.PerformanceMonitor.calculate_alignment">calculate_alignment() (underwater_swarm.metrics.PerformanceMonitor method)</a>
+</li>
+      <li><a href="underwater_swarm.html#underwater_swarm.metrics.PerformanceMonitor.calculate_cohesion">calculate_cohesion() (underwater_swarm.metrics.PerformanceMonitor method)</a>
+</li>
       <li><a href="underwater_swarm.html#underwater_swarm.drone.Drone.calculate_forces">calculate_forces() (underwater_swarm.drone.Drone method)</a>
+</li>
+      <li><a href="underwater_swarm.html#underwater_swarm.metrics.PerformanceMonitor.calculate_safety_violations">calculate_safety_violations() (underwater_swarm.metrics.PerformanceMonitor method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="underwater_swarm.html#underwater_swarm.environment.Environment.check_bounds">check_bounds() (underwater_swarm.environment.Environment method)</a>
+</li>
+      <li><a href="underwater_swarm.html#underwater_swarm.safety.SafetyMonitor.check_collisions">check_collisions() (underwater_swarm.safety.SafetyMonitor method)</a>
+</li>
+      <li><a href="underwater_swarm.html#underwater_swarm.safety.SafetyMonitor.check_geofence">check_geofence() (underwater_swarm.safety.SafetyMonitor method)</a>
 </li>
       <li><a href="underwater_swarm.html#underwater_swarm.simulation.Simulation.controller">controller (underwater_swarm.simulation.Simulation attribute)</a>
 </li>
@@ -145,6 +172,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="underwater_swarm.html#underwater_swarm.drone.Drone">Drone (class in underwater_swarm.drone)</a>
+</li>
+      <li><a href="underwater_swarm.html#underwater_swarm.safety.SafetyMonitor.drone">drone (underwater_swarm.safety.SafetyMonitor attribute)</a>
 </li>
       <li><a href="underwater_swarm.html#underwater_swarm.simulation.Simulation.drones">drones (underwater_swarm.simulation.Simulation attribute)</a>
 </li>
@@ -247,6 +276,8 @@
 </li>
       <li><a href="underwater_swarm.html#underwater_swarm.drone.Drone.mass">mass (underwater_swarm.drone.Drone attribute)</a>
 </li>
+      <li><a href="underwater_swarm.html#underwater_swarm.safety.SafetyMonitor.min_safe_dist">min_safe_dist (underwater_swarm.safety.SafetyMonitor attribute)</a>
+</li>
       <li><a href="underwater_swarm.html#underwater_swarm.simulation.Simulation.mode">mode (underwater_swarm.simulation.Simulation attribute)</a>
 </li>
       <li>
@@ -255,13 +286,15 @@
       <ul>
         <li><a href="main.html#module-main">main</a>
 </li>
-        <li><a href="underwater_swarm.html#module-underwater_swarm">underwater_swarm</a>
-</li>
         <li><a href="underwater_swarm.html#module-underwater_swarm.config">underwater_swarm.config</a>
 </li>
         <li><a href="underwater_swarm.html#module-underwater_swarm.drone">underwater_swarm.drone</a>
 </li>
         <li><a href="underwater_swarm.html#module-underwater_swarm.environment">underwater_swarm.environment</a>
+</li>
+        <li><a href="underwater_swarm.html#module-underwater_swarm.metrics">underwater_swarm.metrics</a>
+</li>
+        <li><a href="underwater_swarm.html#module-underwater_swarm.safety">underwater_swarm.safety</a>
 </li>
         <li><a href="underwater_swarm.html#module-underwater_swarm.simulation">underwater_swarm.simulation</a>
 </li>
@@ -302,6 +335,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="underwater_swarm.html#id5">PATROL (underwater_swarm.config.SwarmMode attribute)</a>, <a href="underwater_swarm.html#underwater_swarm.config.SwarmMode.PATROL">[1]</a>
 </li>
+      <li><a href="underwater_swarm.html#underwater_swarm.metrics.PerformanceMonitor">PerformanceMonitor (class in underwater_swarm.metrics)</a>
+</li>
       <li><a href="underwater_swarm.html#underwater_swarm.drone.Drone.position">position (underwater_swarm.drone.Drone attribute)</a>
 
       <ul>
@@ -336,6 +371,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="underwater_swarm.html#underwater_swarm.drone.Drone.safety">safety (underwater_swarm.drone.Drone attribute)</a>
 </li>
+      <li><a href="underwater_swarm.html#underwater_swarm.safety.SafetyMonitor">SafetyMonitor (class in underwater_swarm.safety)</a>
+</li>
       <li><a href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.scat">scat (underwater_swarm.viz.LiveVisualizer attribute)</a>
 </li>
       <li><a href="underwater_swarm.html#id7">SCHOOLING (underwater_swarm.config.SwarmMode attribute)</a>, <a href="underwater_swarm.html#underwater_swarm.config.SwarmMode.SCHOOLING">[1]</a>
@@ -350,8 +387,12 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.sim">sim (underwater_swarm.viz.LiveVisualizer attribute)</a>
+      <li><a href="underwater_swarm.html#underwater_swarm.metrics.PerformanceMonitor.sim">sim (underwater_swarm.metrics.PerformanceMonitor attribute)</a>
+
+      <ul>
+        <li><a href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.sim">(underwater_swarm.viz.LiveVisualizer attribute)</a>
 </li>
+      </ul></li>
       <li><a href="underwater_swarm.html#underwater_swarm.simulation.Simulation">Simulation (class in underwater_swarm.simulation)</a>
 </li>
       <li><a href="underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.start">start() (underwater_swarm.viz.LiveVisualizer method)</a>
@@ -383,13 +424,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    underwater_swarm
-
-      <ul>
-        <li><a href="underwater_swarm.html#module-underwater_swarm">module</a>
-</li>
-      </ul></li>
-      <li>
     underwater_swarm.config
 
       <ul>
@@ -408,6 +442,20 @@
 
       <ul>
         <li><a href="underwater_swarm.html#module-underwater_swarm.environment">module</a>
+</li>
+      </ul></li>
+      <li>
+    underwater_swarm.metrics
+
+      <ul>
+        <li><a href="underwater_swarm.html#module-underwater_swarm.metrics">module</a>
+</li>
+      </ul></li>
+      <li>
+    underwater_swarm.safety
+
+      <ul>
+        <li><a href="underwater_swarm.html#module-underwater_swarm.safety">module</a>
 </li>
       </ul></li>
   </ul></td>
@@ -461,7 +509,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, CDagorn.</p>
+    <p>&#169; Copyright 2024-2026, CDagorn.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>underwater_swarm.drone &#8212; EssaimDrones 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for underwater_swarm.drone</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Defines the Drone agent class.</span>
+
+<span class="sd">This module contains the ``Drone`` class, which represents an individual agent</span>
+<span class="sd">in the swarm simulation. It handles physics integration, force application,</span>
+<span class="sd">and state management for various behaviors.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DRAG_COEFF</span><span class="p">,</span>
+    <span class="n">MASS</span><span class="p">,</span>
+    <span class="n">MAX_FORCE</span><span class="p">,</span>
+    <span class="n">MAX_SPEED</span><span class="p">,</span>
+    <span class="n">WATER_DENSITY</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.safety</span><span class="w"> </span><span class="kn">import</span> <span class="n">SafetyMonitor</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize</span><span class="p">(</span><span class="n">vec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalizes *vec* and scales it to ``MAX_FORCE``.</span>
+
+<span class="sd">    Returns the zero-vector unchanged.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">magnitude</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vec</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">magnitude</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vec</span> <span class="o">/</span> <span class="n">magnitude</span> <span class="o">*</span> <span class="n">MAX_FORCE</span>
+    <span class="k">return</span> <span class="n">vec</span>
+
+
+<div class="viewcode-block" id="Drone">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.drone.Drone">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Drone</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a single underwater drone agent.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: Unique identifier for the drone.</span>
+<span class="sd">        position: 3D position vector ``[x, y, z]``.</span>
+<span class="sd">        velocity: 3D velocity vector ``[vx, vy, vz]``.</span>
+<span class="sd">        acceleration: 3D acceleration vector ``[ax, ay, az]``.</span>
+<span class="sd">        mass: Mass of the drone in kg.</span>
+<span class="sd">        drag_factor: Multiplier for drag calculation (used for drafting).</span>
+<span class="sd">        pso_best_position: Best known position for PSO.</span>
+<span class="sd">        pso_best_score: Best known score for PSO.</span>
+<span class="sd">        flash_timer: Timer for flash expansion behavior.</span>
+<span class="sd">        flash_direction: Direction vector for flash expansion.</span>
+<span class="sd">        safety: Safety module for the drone.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">start_pos</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">start_pos</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">MASS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drag_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># PSO State</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pso_best_position</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pso_best_score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+        <span class="c1"># Flash Expansion State</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flash_timer</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flash_direction</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="c1"># Safety Module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">safety</span> <span class="o">=</span> <span class="n">SafetyMonitor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Drone.update">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.drone.Drone.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates drone physics using Euler integration.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dt: Time step in seconds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Limit force</span>
+        <span class="n">accel_mag</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">accel_mag</span> <span class="o">&gt;</span> <span class="n">MAX_FORCE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span> <span class="o">/</span> <span class="n">accel_mag</span><span class="p">)</span> <span class="o">*</span> <span class="n">MAX_FORCE</span>
+
+        <span class="c1"># F = ma -&gt; a = F/m</span>
+        <span class="n">actual_accel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">+=</span> <span class="n">actual_accel</span> <span class="o">*</span> <span class="n">dt</span>
+
+        <span class="c1"># Limit speed</span>
+        <span class="n">speed</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">velocity</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">speed</span> <span class="o">&gt;</span> <span class="n">MAX_SPEED</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">/</span> <span class="n">speed</span><span class="p">)</span> <span class="o">*</span> <span class="n">MAX_SPEED</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">*</span> <span class="n">dt</span>
+
+        <span class="c1"># Reset accumulator for next step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drag_factor</span> <span class="o">=</span> <span class="mf">1.0</span></div>
+
+
+<div class="viewcode-block" id="Drone.apply_force">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.drone.Drone.apply_force">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_force</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies a force vector to the drone.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            force: 3D force vector to apply.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acceleration</span> <span class="o">+=</span> <span class="n">force</span></div>
+
+
+<div class="viewcode-block" id="Drone.apply_drag">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.drone.Drone.apply_drag">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_drag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fluid_velocity</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies hydrodynamic drag based on relative velocity.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fluid_velocity: Velocity vector of the surrounding fluid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">relative_vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">-</span> <span class="n">fluid_velocity</span>
+        <span class="n">speed</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">relative_vel</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">speed</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">drag_mag</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="mf">0.5</span>
+                <span class="o">*</span> <span class="n">WATER_DENSITY</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">DRAG_COEFF</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">drag_factor</span><span class="p">)</span>
+                <span class="o">*</span> <span class="mf">0.01</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">speed</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">drag_force</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">relative_vel</span> <span class="o">/</span> <span class="n">speed</span><span class="p">)</span> <span class="o">*</span> <span class="n">drag_mag</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">apply_force</span><span class="p">(</span><span class="n">drag_force</span><span class="p">)</span></div>
+</div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Force calculation</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Notice: calculate_forces has been removed to comply with SRP (Single Responsibility Principle).</span>
+    <span class="c1"># Behavior logic is now handled globally in &#39;behaviors.py&#39; using vectorized numpy ops</span>
+    <span class="c1"># through the Strategy Pattern invoked by &#39;SwarmController&#39;.</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">EssaimDrones</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Agent Antigravity.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.0.4</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

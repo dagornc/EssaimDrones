@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>underwater_swarm.config &#8212; EssaimDrones 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for underwater_swarm.config</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Configuration parameters for the Underwater Drone Swarm Simulation.</span>
+
+<span class="sd">This module parses the Config/global.yaml file using Pydantic models to ensure</span>
+<span class="sd">type safety and correct configuration structure at runtime.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+
+
+<div class="viewcode-block" id="SwarmMode">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.config.SwarmMode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SwarmMode</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">PATROL</span> <span class="o">=</span> <span class="s2">&quot;PATROL&quot;</span>
+    <span class="n">ATTACK</span> <span class="o">=</span> <span class="s2">&quot;ATTACK&quot;</span>
+    <span class="n">DEFEND</span> <span class="o">=</span> <span class="s2">&quot;DEFEND&quot;</span>
+    <span class="n">ENCIRCLE</span> <span class="o">=</span> <span class="s2">&quot;ENCIRCLE&quot;</span>
+    <span class="n">SHIELD</span> <span class="o">=</span> <span class="s2">&quot;SHIELD&quot;</span>
+    <span class="n">SEARCH</span> <span class="o">=</span> <span class="s2">&quot;SEARCH&quot;</span>
+    <span class="n">FLASH_EXPANSION</span> <span class="o">=</span> <span class="s2">&quot;FLASH_EXPANSION&quot;</span>
+    <span class="n">SCHOOLING</span> <span class="o">=</span> <span class="s2">&quot;SCHOOLING&quot;</span>
+    <span class="n">PREDATOR_PACK</span> <span class="o">=</span> <span class="s2">&quot;PREDATOR_PACK&quot;</span>
+    <span class="n">EXPLORATION</span> <span class="o">=</span> <span class="s2">&quot;EXPLORATION&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="SimulationConfig">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.config.SimulationConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimulationConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span></div>
+
+
+
+<div class="viewcode-block" id="PhysicsConfig">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.config.PhysicsConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PhysicsConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">water_density</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">drag_coeff</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">drafting_bonus</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+
+<div class="viewcode-block" id="DroneConfig">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.config.DroneConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DroneConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">max_speed</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">max_force</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">mass</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">perception_radius</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">crowding_radius</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+
+<div class="viewcode-block" id="BoidsConfig">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.config.BoidsConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BoidsConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">separation</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">alignment</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">cohesion</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">target</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">current</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+
+<div class="viewcode-block" id="ModeParamConfig">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.config.ModeParamConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ModeParamConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">sep</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">ali</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">coh</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">target</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">speed_mult</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+
+<div class="viewcode-block" id="PSOConfig">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.config.PSOConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PSOConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">inertia</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">cognitive</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">social</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+
+<div class="viewcode-block" id="FlashConfig">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.config.FlashConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlashConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">cooldown</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">trigger_dist</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+
+<div class="viewcode-block" id="EnvironmentConfig">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.config.EnvironmentConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnvironmentConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">bounds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="AppConfig">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.config.AppConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AppConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">simulation</span><span class="p">:</span> <span class="n">SimulationConfig</span>
+    <span class="n">physics</span><span class="p">:</span> <span class="n">PhysicsConfig</span>
+    <span class="n">drone</span><span class="p">:</span> <span class="n">DroneConfig</span>
+    <span class="n">boids</span><span class="p">:</span> <span class="n">BoidsConfig</span>
+    <span class="n">mode_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ModeParamConfig</span><span class="p">]</span>
+    <span class="n">pso</span><span class="p">:</span> <span class="n">PSOConfig</span>
+    <span class="n">flash</span><span class="p">:</span> <span class="n">FlashConfig</span>
+    <span class="n">environment</span><span class="p">:</span> <span class="n">EnvironmentConfig</span>
+
+<div class="viewcode-block" id="AppConfig.load_from_yaml">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.config.AppConfig.load_from_yaml">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AppConfig&quot;</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># Load config</span>
+<span class="n">CONFIG_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))),</span>
+    <span class="s2">&quot;Config&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;global.yaml&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">CONFIG_FILE</span><span class="p">):</span>
+    <span class="c1"># Fallback path if run from differently nested location</span>
+    <span class="n">CONFIG_FILE</span> <span class="o">=</span> <span class="s2">&quot;Config/global.yaml&quot;</span>
+
+<span class="n">global_config</span> <span class="o">=</span> <span class="n">AppConfig</span><span class="o">.</span><span class="n">load_from_yaml</span><span class="p">(</span><span class="n">CONFIG_FILE</span><span class="p">)</span>
+
+<span class="c1"># Expose constants for backward compatibility during refactoring</span>
+<span class="n">DT</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">dt</span>
+<span class="n">STEPS</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">steps</span>
+
+<span class="n">WATER_DENSITY</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">water_density</span>
+<span class="n">DRAG_COEFF</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">drag_coeff</span>
+<span class="n">DRAFTING_BONUS</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">drafting_bonus</span>
+
+<span class="n">MAX_SPEED</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">drone</span><span class="o">.</span><span class="n">max_speed</span>
+<span class="n">MAX_FORCE</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">drone</span><span class="o">.</span><span class="n">max_force</span>
+<span class="n">MASS</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">drone</span><span class="o">.</span><span class="n">mass</span>
+<span class="n">PERCEPTION_RADIUS</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">drone</span><span class="o">.</span><span class="n">perception_radius</span>
+<span class="n">CROWDING_RADIUS</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">drone</span><span class="o">.</span><span class="n">crowding_radius</span>
+
+<span class="n">W_SEPARATION</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">boids</span><span class="o">.</span><span class="n">separation</span>
+<span class="n">W_ALIGNMENT</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">boids</span><span class="o">.</span><span class="n">alignment</span>
+<span class="n">W_COHESION</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">boids</span><span class="o">.</span><span class="n">cohesion</span>
+<span class="n">W_TARGET</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">boids</span><span class="o">.</span><span class="n">target</span>
+<span class="n">W_CURRENT</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">boids</span><span class="o">.</span><span class="n">current</span>
+
+<span class="c1"># Re-map mode_params to Enum keys</span>
+<span class="n">MODE_PARAMS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">SwarmMode</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">mode_name</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">global_config</span><span class="o">.</span><span class="n">mode_params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">enum_mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="p">(</span><span class="n">mode_name</span><span class="p">)</span>
+        <span class="n">MODE_PARAMS</span><span class="p">[</span><span class="n">enum_mode</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+<span class="n">PSO_INERTIA</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">pso</span><span class="o">.</span><span class="n">inertia</span>
+<span class="n">PSO_COGNITIVE</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">pso</span><span class="o">.</span><span class="n">cognitive</span>
+<span class="n">PSO_SOCIAL</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">pso</span><span class="o">.</span><span class="n">social</span>
+
+<span class="n">FLASH_DURATION</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">flash</span><span class="o">.</span><span class="n">duration</span>
+<span class="n">FLASH_COOLDOWN</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">flash</span><span class="o">.</span><span class="n">cooldown</span>
+<span class="n">FLASH_TRIGGER_DIST</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">flash</span><span class="o">.</span><span class="n">trigger_dist</span>
+
+<span class="n">BOUNDS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">global_config</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">bounds</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">EssaimDrones</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Agent Antigravity.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.0.4</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

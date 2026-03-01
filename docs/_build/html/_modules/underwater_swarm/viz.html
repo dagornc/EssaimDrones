@@ -7,14 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>underwater_swarm.viz &mdash; EssaimDrones 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../_static/documentation_options.js?v=8d563738"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -78,9 +78,10 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.animation</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">animation</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mpl_toolkits.mplot3d</span><span class="w"> </span><span class="kn">import</span> <span class="n">Axes3D</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">BOUNDS</span><span class="p">,</span> <span class="n">SwarmMode</span>
+
 
 <div class="viewcode-block" id="LiveVisualizer">
 <a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.viz.LiveVisualizer">[docs]</a>
@@ -103,6 +104,9 @@
 <span class="sd">        selected_type (str): Type of currently selected entity (&#39;enemy&#39;, &#39;friend&#39;, &#39;obstacle&#39;).</span>
 <span class="sd">        selected_idx (int): Index of currently selected entity.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LiveVisualizer.__init__">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the visualizer.</span>
 
@@ -113,16 +117,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_zlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">title_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mode: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        
+
         <span class="c1"># Legend Text</span>
         <span class="n">legend</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">&quot;Controls:</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -141,35 +145,35 @@
             <span class="s2">&quot;R-Click: Friend&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">legend</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">transFigure</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
-        
+
         <span class="c1"># View State</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_2d</span> <span class="o">=</span> <span class="kc">False</span>
-        
+
         <span class="c1"># Enemy and Friend Markers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enemy_scat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Enemy&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">friend_scat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;^&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Friend&#39;</span><span class="p">)</span>
-        
+
         <span class="c1"># Obstacle Markers (Black Spheres)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obs_scat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Obstacle&#39;</span><span class="p">)</span>
-        
+
         <span class="c1"># Stems (Vertical lines for depth)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stem_lines</span> <span class="o">=</span> <span class="p">[]</span>
-        
+
         <span class="c1"># Selection State</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">selected_type</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># &#39;enemy&#39;, &#39;friend&#39;, &#39;obstacle&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_type</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># &#39;enemy&#39;, &#39;friend&#39;, &#39;obstacle&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        
+
         <span class="c1"># Drag State</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_dragging</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">drag_start_pos</span> <span class="o">=</span> <span class="kc">None</span>
-        
+
         <span class="c1"># Connect events</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;key_press_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;button_press_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_press</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;button_release_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_release</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;motion_notify_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_motion</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;scroll_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_scroll</span><span class="p">)</span>
-        
+
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== CONTROLS ===&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1: PATROL&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2: ATTACK (Enemy)&quot;</span><span class="p">)</span>
@@ -186,7 +190,8 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;R-Click + Drag: Move Friend&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;M-Click: Place Obstacle&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SCROLL: Adjust Depth (Z) of Selected&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;================</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;================</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="LiveVisualizer.on_scroll">
 <a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.on_scroll">[docs]</a>
@@ -196,33 +201,38 @@
 <span class="sd">        Args:</span>
 <span class="sd">            event (MouseEvent): Matplotlib mouse event.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="k">return</span>
-        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="c1"># Adjust Z</span>
         <span class="n">step</span> <span class="o">=</span> <span class="mf">5.0</span> <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span> <span class="k">else</span> <span class="o">-</span><span class="mf">5.0</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_type</span> <span class="o">==</span> <span class="s1">&#39;enemy&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">targets</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Enemy </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="si">}</span><span class="s2"> Depth: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                
+
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_type</span> <span class="o">==</span> <span class="s1">&#39;friend&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">friends</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">friends</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">friends</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">friends</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">friends</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Friend </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="si">}</span><span class="s2"> Depth: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">friends</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_type</span> <span class="o">==</span> <span class="s1">&#39;obstacle&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">obstacles</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">obstacles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">]</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">obstacles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">]</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Obstacle </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="si">}</span><span class="s2"> Depth: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">obstacles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">]</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+                <span class="n">obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">obstacles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">]</span>
+                <span class="n">obs</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">obs</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Obstacle </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="si">}</span><span class="s2"> Depth: </span><span class="si">{</span><span class="n">obs</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LiveVisualizer.get_event_coords">
 <a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.get_event_coords">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_event_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper to get 3D coordinates from event.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">:</span> <span class="k">return</span> <span class="kc">None</span>
-        
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
         <span class="n">new_x</span><span class="p">,</span> <span class="n">new_y</span><span class="p">,</span> <span class="n">new_z</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">50.0</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_2d</span><span class="p">:</span>
             <span class="n">new_x</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">xdata</span>
@@ -238,7 +248,7 @@
         <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">new_x</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">1.1</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">new_y</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">1.1</span> <span class="ow">and</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
             <span class="n">new_x</span> <span class="o">*=</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">new_y</span> <span class="o">*=</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            
+
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">new_x</span><span class="p">,</span> <span class="n">new_y</span><span class="p">,</span> <span class="n">new_z</span><span class="p">])</span></div>
 
 
@@ -247,11 +257,12 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">on_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Handles mouse button press to start dragging or select.&quot;&quot;&quot;</span>
         <span class="n">coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_event_coords</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">coords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span>
-        
+        <span class="k">if</span> <span class="n">coords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">manual_target</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">SELECTION_THRESH</span> <span class="o">=</span> <span class="mf">10.0</span>
-        
+
         <span class="c1"># Check Enemies (Left Click)</span>
         <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">targets</span><span class="p">):</span>
@@ -261,7 +272,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">is_dragging</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Started dragging Enemy </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
-            
+
             <span class="c1"># If no enemy selected, create one?</span>
             <span class="c1"># Only create if NOT dragging existing</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
@@ -279,7 +290,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">is_dragging</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Started dragging Friend </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
-            
+
             <span class="c1"># Create Friend</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">friends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">selected_type</span> <span class="o">=</span> <span class="s1">&#39;friend&#39;</span>
@@ -295,7 +306,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span> <span class="o">=</span> <span class="n">i</span>
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected Obstacle </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
-            
+
             <span class="c1"># Create Obstacle</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">add_obstacle</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">15.0</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">selected_type</span> <span class="o">=</span> <span class="s1">&#39;obstacle&#39;</span>
@@ -307,17 +318,19 @@
 <a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.on_motion">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_motion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Handles mouse motion to update dragged item position.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dragging</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="k">return</span>
-        
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dragging</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="n">coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_event_coords</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">coords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span>
-        
+        <span class="k">if</span> <span class="n">coords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_type</span> <span class="o">==</span> <span class="s1">&#39;enemy&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">targets</span><span class="p">):</span>
                 <span class="c1"># Keep Z, update X/Y</span>
                 <span class="n">old_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">old_z</span><span class="p">])</span>
-                
+
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_type</span> <span class="o">==</span> <span class="s1">&#39;friend&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">friends</span><span class="p">):</span>
                 <span class="n">old_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">friends</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_idx</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
@@ -341,18 +354,29 @@
 <span class="sd">        Args:</span>
 <span class="sd">            event (KeyEvent): Matplotlib key event.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">PATROL</span>
-        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">ATTACK</span>
-        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">DEFEND</span>
-        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;4&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">ENCIRCLE</span>
-        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;6&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">SHIELD</span>
-        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;7&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">SEARCH</span>
-        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;8&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">FLASH_EXPANSION</span>
-        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;9&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">SCHOOLING</span>
-        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">PREDATOR_PACK</span>
-        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">EXPLORATION</span>
-        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;5&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">toggle_view</span><span class="p">()</span>
-            
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">PATROL</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">ATTACK</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">DEFEND</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;4&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">ENCIRCLE</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;6&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">SHIELD</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;7&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">SEARCH</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;8&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">FLASH_EXPANSION</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;9&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">SCHOOLING</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">PREDATOR_PACK</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="o">.</span><span class="n">EXPLORATION</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;5&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">toggle_view</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">title_text</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mode: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Switched to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
@@ -372,43 +396,44 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mode: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-            
+
 <div class="viewcode-block" id="LiveVisualizer.update">
 <a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.viz.LiveVisualizer.update">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
         <span class="c1"># Force GUI update for MacOSX backend</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-        
+
         <span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d</span><span class="o">.</span><span class="n">position</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">drones</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scat</span><span class="o">.</span><span class="n">_offsets3d</span> <span class="o">=</span> <span class="p">(</span><span class="n">positions</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">positions</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">positions</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
-        
+
         <span class="c1"># Update Enemy Markers</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">targets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">t_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">targets</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enemy_scat</span><span class="o">.</span><span class="n">_offsets3d</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_arr</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">t_arr</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">t_arr</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enemy_scat</span><span class="o">.</span><span class="n">_offsets3d</span> <span class="o">=</span> <span class="p">([],</span> <span class="p">[],</span> <span class="p">[])</span>
-            
+
         <span class="c1"># Update Friend Markers</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">friends</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">f_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">friends</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">friend_scat</span><span class="o">.</span><span class="n">_offsets3d</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_arr</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">f_arr</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">f_arr</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">friend_scat</span><span class="o">.</span><span class="n">_offsets3d</span> <span class="o">=</span> <span class="p">([],</span> <span class="p">[],</span> <span class="p">[])</span>
-            
+
         <span class="c1"># Update Obstacle Markers</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">obstacles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">o_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">o</span><span class="o">.</span><span class="n">position</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">obstacles</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obs_scat</span><span class="o">.</span><span class="n">_offsets3d</span> <span class="o">=</span> <span class="p">(</span><span class="n">o_arr</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">o_arr</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">o_arr</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obs_scat</span><span class="o">.</span><span class="n">_offsets3d</span> <span class="o">=</span> <span class="p">([],</span> <span class="p">[],</span> <span class="p">[])</span>
-            
+
         <span class="c1"># Draw Stems</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stem_lines</span><span class="p">:</span> <span class="n">line</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stem_lines</span><span class="p">:</span>
+            <span class="n">line</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stem_lines</span> <span class="o">=</span> <span class="p">[]</span>
-        
+
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">targets</span><span class="p">:</span>
             <span class="n">line</span><span class="p">,</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stem_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
@@ -417,9 +442,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">stem_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">obstacles</span><span class="p">:</span>
             <span class="c1"># Obstacles get a black stem</span>
-            <span class="n">line</span><span class="p">,</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">o</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">o</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">o</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">line</span><span class="p">,</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">o</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">o</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                 <span class="n">o</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stem_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enemy_scat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">friend_scat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obs_scat</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">stem_lines</span></div>
 
 
@@ -431,6 +457,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ani</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">blit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 </div>
+
 
 
 <div class="viewcode-block" id="animate_swarm">
@@ -447,15 +474,15 @@
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_zlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">BOUNDS</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-    
+
     <span class="n">scat</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
         <span class="n">positions</span> <span class="o">=</span> <span class="n">history</span><span class="p">[</span><span class="n">frame</span><span class="p">]</span>
         <span class="n">scat</span><span class="o">.</span><span class="n">_offsets3d</span> <span class="o">=</span> <span class="p">(</span><span class="n">positions</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">positions</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">positions</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">scat</span><span class="p">,</span>
 
-    <span class="n">ani</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">update</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">history</span><span class="p">),</span> <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span> <span class="n">blit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">_ani</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">update</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">history</span><span class="p">),</span> <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span> <span class="n">blit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># noqa: F841</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 </pre></div>
@@ -467,7 +494,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, CDagorn.</p>
+    <p>&#169; Copyright 2024-2026, CDagorn.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

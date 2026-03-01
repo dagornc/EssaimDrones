@@ -1,0 +1,37 @@
+# Environnement
+.env
+.venv/
+env/
+venv/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.coverage
+.coveragerc
+htmlcov/
+
+# Logs et Configs
+Log/
+*.log
+Config/*.db
+Config/*.sqlite
+
+# Frontend
+Code/Frontend/node_modules/
+Code/Frontend/dist/
+Code/Frontend/.vite/
+
+# Agent local
+.agent/
+.agents/
+.specify/
+.gemini/
+
+# OS specific
+.DS_Store
+Thumbs.db

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>AquaSwarm Swarm Configuration</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#06d0f9",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0a1628",
+                        "surface": "#0d1f3c",
+                        "card": "rgba(13, 31, 60, 0.7)",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass {
+            background: rgba(13, 31, 60, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(6, 208, 249, 0.1);
+        }
+
+        .custom-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: #1e293b;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #06d0f9;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(6, 208, 249, 0.5);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex">
+    <!-- Left Sidebar -->
+    <aside class="w-16 flex flex-col items-center py-6 bg-background-dark border-r border-primary/10 shrink-0">
+        <div class="mb-8">
+            <span class="material-symbols-outlined text-primary text-3xl">waves</span>
+        </div>
+        <nav class="flex flex-col gap-6" aria-label="Main navigation">
+            <a href="dashboard.html" data-nav-target="dashboard.html"
+                class="p-2 text-slate-400 hover:text-primary transition-colors rounded-lg" aria-label="Dashboard">
+                <span class="material-symbols-outlined">dashboard</span>
+            </a>
+            <a href="tactical.html" data-nav-target="tactical.html"
+                class="p-2 text-slate-400 hover:text-primary transition-colors rounded-lg" aria-label="3D Viewport">
+                <span class="material-symbols-outlined">explore</span>
+            </a>
+            <a href="configuration.html" data-nav-target="configuration.html"
+                class="p-2 text-primary bg-primary/10 rounded-lg" aria-label="Configuration" aria-current="page">
+                <span class="material-symbols-outlined">memory</span>
+            </a>
+            <a href="metrics.html" data-nav-target="metrics.html"
+                class="p-2 text-slate-400 hover:text-primary transition-colors rounded-lg" aria-label="Metrics">
+                <span class="material-symbols-outlined">precision_manufacturing</span>
+            </a>
+            <a href="#" class="p-2 text-slate-400 hover:text-primary transition-colors rounded-lg"
+                aria-label="Settings">
+                <span class="material-symbols-outlined">settings</span>
+            </a>
+        </nav>
+        <div class="mt-auto">
+            <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
+                <span class="text-xs font-bold text-primary">AQ</span>
+            </div>
+        </div>
+    </aside>
+    <!-- Main Wrapper -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Top Bar -->
+        <header class="h-16 flex items-center justify-between px-8 bg-surface border-b border-primary/10">
+            <div class="flex items-center gap-4">
+                <nav class="flex items-center gap-2 text-sm font-medium" aria-label="Breadcrumb">
+                    <span class="text-slate-400">AquaSwarm Command</span>
+                    <span class="text-slate-600">/</span>
+                    <span class="text-primary" data-i18n="nav.config">Configuration</span>
+                </nav>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-lg">
+                    <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    <span class="text-xs font-bold text-primary uppercase tracking-wider">30 Drones Active</span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-400 font-mono text-sm">
+                    <span class="material-symbols-outlined text-sm">schedule</span>
+                    <span>12:45:00 UTC</span>
+                </div>
+                <button id="theme-toggle" class="p-2 text-slate-400 hover:text-white rounded"
+                    aria-label="Toggle dark mode">
+                    <span class="material-symbols-outlined">dark_mode</span>
+                </button>
+                <div class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 overflow-hidden">
+                    <img alt="User Profile" class="w-full h-full object-cover"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKqeRMcfVQNogQPoVFc1vbZjlwYZoJJqQrMLXLtQbr5cYekxlzXlxN63qnzdzd5AZEAEd9W8hIXBo6HA-FQnA5aRQEBEXQ2XQFFnGs6MUq8374wnLMXON20jX2_gTwiX-DvVc5EutRfsNqReFGuaGCr-13ZJ6wWYhQaiMB8hHcrrnu7k5uUaXXxzxQS_kPnTtLWQfJn3pLK33nNZd2W8K3cdGNcIMMfsC8xIVKTRoRccJmIhq_TQZEouepbgJ8QAcC-LqyaEj38mDo" />
+                </div>
+            </div>
+        </header>
+        <!-- Scrollable Content Area -->
+        <main class="flex-1 overflow-y-auto p-8 bg-background-dark">
+            <div class="max-w-7xl mx-auto flex flex-col gap-8">
+                <div class="flex justify-between items-end">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight text-slate-100">Swarm Configuration</h1>
+                        <p class="text-slate-400 text-sm mt-1 font-mono uppercase tracking-widest text-xs">Environment
+                            &amp; Physics Engine v4.2.0</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button id="reset-defaults-btn"
+                            class="px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-400 border border-slate-700 rounded hover:bg-slate-800 transition-colors"
+                            aria-label="Reset all parameters to defaults">
+                            Reset to Defaults
+                        </button>
+                        <button id="apply-changes-btn"
+                            class="px-6 py-2 bg-primary text-background-dark text-xs font-bold uppercase tracking-wider rounded hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(6,208,249,0.3)]"
+                            aria-label="Apply configuration changes">
+                            Apply Changes
+                        </button>
+                    </div>
+                </div>
+                <!-- 2-Column Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Left Column -->
+                    <div class="flex flex-col gap-8">
+                        <!-- Physics Parameters Card -->
+                        <section class="glass rounded-xl p-6">
+                            <div class="flex items-center gap-2 mb-6 border-b border-primary/10 pb-4">
+                                <span class="material-symbols-outlined text-primary">science</span>
+                                <h2 class="font-bold text-slate-100 uppercase tracking-widest text-xs">Physics
+                                    Parameters</h2>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <label class="text-xs text-slate-400" for="water-density">Water Density
+                                            (kg/m³)</label>
+                                        <span class="text-xs font-mono text-primary">1025.0</span>
+                                    </div>
+                                    <input id="water-density"
+                                        class="w-full bg-background-dark/50 border-slate-700 rounded-lg text-sm font-mono focus:ring-primary focus:border-primary"
+                                        type="text" value="1025.0" aria-label="Water density in kg per cubic meter" />
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <label class="text-xs text-slate-400" for="drag-coefficient">Drag
+                                            Coefficient</label>
+                                        <span class="text-xs font-mono text-primary slider-value">1.0</span>
+                                    </div>
+                                    <input id="drag-coefficient" class="custom-slider" max="5" min="0" step="0.1"
+                                        type="range" value="1" aria-label="Drag coefficient" />
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <label class="text-xs text-slate-400" for="drafting-bonus">Drafting
+                                            Bonus</label>
+                                        <span class="text-xs font-mono text-primary slider-value">0.3</span>
+                                    </div>
+                                    <input id="drafting-bonus" class="custom-slider" max="1" min="0" step="0.05"
+                                        type="range" value="0.3" aria-label="Drafting bonus factor" />
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <label class="text-xs text-slate-400" for="time-step">Time Step (s)</label>
+                                        <span class="text-xs font-mono text-primary">0.1</span>
+                                    </div>
+                                    <input id="time-step"
+                                        class="w-full bg-background-dark/50 border-slate-700 rounded-lg text-sm font-mono focus:ring-primary focus:border-primary"
+                                        type="text" value="0.1" aria-label="Simulation time step in seconds" />
+                                </div>
+                            </div>
+                        </section>
+                        <!-- Drone Specifications Card -->
+                        <section class="glass rounded-xl p-6">
+                            <div class="flex items-center gap-2 mb-6 border-b border-primary/10 pb-4">
+                                <span class="material-symbols-outlined text-primary">settings_input_component</span>
+                                <h2 class="font-bold text-slate-100 uppercase tracking-widest text-xs">Drone
+                                    Specifications</h2>
+                            </div>
+                            <div class="space-y-6">
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between">
+                                            <label class="text-xs text-slate-400" for="max-speed">Max Speed
+                                                (m/s)</label>
+                                            <span class="text-xs font-mono text-primary slider-value">12.5</span>
+                                        </div>
+                                        <input id="max-speed" class="custom-slider" max="30" min="0" type="range"
+                                            value="12.5" aria-label="Maximum drone speed" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between">
+                                            <label class="text-xs text-slate-400" for="max-force">Max Force (N)</label>
+                                            <span class="text-xs font-mono text-primary slider-value">10.0</span>
+                                        </div>
+                                        <input id="max-force" class="custom-slider" max="50" min="0" type="range"
+                                            value="10" aria-label="Maximum drone force" />
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <label class="text-xs text-slate-400" for="drone-mass">Mass (kg)</label>
+                                        <span class="text-xs font-mono text-primary slider-value">10.0</span>
+                                    </div>
+                                    <input id="drone-mass" class="custom-slider" max="100" min="1" type="range"
+                                        value="10" aria-label="Drone mass in kilograms" />
+                                </div>
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between items-center">
+                                            <label class="text-xs text-slate-400 flex items-center gap-1"
+                                                for="perception-radius">
+                                                <span class="material-symbols-outlined text-[14px]">track_changes</span>
+                                                Perception Radius (m)
+                                            </label>
+                                            <span class="text-xs font-mono text-primary slider-value">15.0</span>
+                                        </div>
+                                        <input id="perception-radius" class="custom-slider" max="50" min="1"
+                                            type="range" value="15" aria-label="Perception radius in meters" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between">
+                                            <label class="text-xs text-slate-400" for="crowding-radius">Crowding Radius
+                                                (m)</label>
+                                            <span class="text-xs font-mono text-primary slider-value">5.0</span>
+                                        </div>
+                                        <input id="crowding-radius" class="custom-slider" max="20" min="1" type="range"
+                                            value="5" aria-label="Crowding radius in meters" />
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <!-- Right Column -->
+                    <div class="flex flex-col gap-8">
+                        <!-- Mode Parameters Card -->
+                        <section class="glass rounded-xl p-6 flex flex-col h-full">
+                            <div class="flex items-center gap-2 mb-6 border-b border-primary/10 pb-4">
+                                <span class="material-symbols-outlined text-primary">hub</span>
+                                <h2 class="font-bold text-slate-100 uppercase tracking-widest text-xs">Mode Parameters
+                                </h2>
+                            </div>
+                            <!-- Tabs -->
+                            <div class="flex flex-wrap gap-1 mb-6 bg-background-dark/40 p-1 rounded-lg" role="tablist"
+                                aria-label="Swarm mode tabs">
+                                <button
+                                    class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider bg-primary text-background-dark rounded"
+                                    role="tab" aria-selected="true">Patrol</button>
+                                <button
+                                    class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-100 transition-colors"
+                                    role="tab" aria-selected="false">Attack</button>
+                                <button
+                                    class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-100 transition-colors"
+                                    role="tab" aria-selected="false">Defend</button>
+                                <button
+                                    class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-100 transition-colors"
+                                    role="tab" aria-selected="false">Encircle</button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                                <div class="space-y-5">
+                                    <div class="space-y-1">
+                                        <div class="flex justify-between text-xs uppercase text-slate-500 font-bold">
+                                            <span>Separation</span>
+                                            <span class="text-primary font-mono slider-value">1.5</span>
+                                        </div>
+                                        <input class="custom-slider" max="5" min="0" step="0.1" type="range" value="1.5"
+                                            aria-label="Separation weight" />
+                                    </div>
+                                    <div class="space-y-1">
+                                        <div class="flex justify-between text-xs uppercase text-slate-500 font-bold">
+                                            <span>Alignment</span>
+                                            <span class="text-primary font-mono slider-value">1.0</span>
+                                        </div>
+                                        <input class="custom-slider" max="5" min="0" step="0.1" type="range" value="1.0"
+                                            aria-label="Alignment weight" />
+                                    </div>
+                                    <div class="space-y-1">
+                                        <div class="flex justify-between text-xs uppercase text-slate-500 font-bold">
+                                            <span>Cohesion</span>
+                                            <span class="text-primary font-mono slider-value">1.2</span>
+                                        </div>
+                                        <input class="custom-slider" max="5" min="0" step="0.1" type="range" value="1.2"
+                                            aria-label="Cohesion weight" />
+                                    </div>
+                                    <div class="space-y-1">
+                                        <div class="flex justify-between text-xs uppercase text-slate-500 font-bold">
+                                            <span>Target Weights</span>
+                                            <span class="text-primary font-mono slider-value">2.0</span>
+                                        </div>
+                                        <input class="custom-slider" max="5" min="0" step="0.1" type="range" value="2.0"
+                                            aria-label="Target weight" />
+                                    </div>
+                                    <div class="space-y-1">
+                                        <div class="flex justify-between text-xs uppercase text-slate-500 font-bold">
+                                            <span>Speed Mult.</span>
+                                            <span class="text-primary font-mono slider-value">0.8</span>
+                                        </div>
+                                        <input class="custom-slider" max="2" min="0" step="0.1" type="range" value="0.8"
+                                            aria-label="Speed multiplier" />
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-center justify-center py-4">
+                                    <div class="relative w-40 h-40">
+                                        <!-- Pentagon Visualization -->
+                                        <div class="absolute inset-0 flex items-center justify-center opacity-20">
+                                            <div class="w-full h-full border border-primary"
+                                                style="clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);">
+                                            </div>
+                                        </div>
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <svg class="w-full h-full drop-shadow-[0_0_8px_rgba(6,208,249,0.5)]"
+                                                viewBox="0 0 100 100">
+                                                <polygon fill="rgba(6, 208, 249, 0.4)"
+                                                    points="50,20 85,45 75,80 30,75 15,40" stroke="#06d0f9"
+                                                    stroke-width="2"></polygon>
+                                            </svg>
+                                        </div>
+                                        <div
+                                            class="absolute -top-4 left-1/2 -translate-x-1/2 text-[8px] font-bold text-slate-400">
+                                            ALIGN</div>
+                                        <div class="absolute top-1/4 -right-8 text-[8px] font-bold text-slate-400">
+                                            COHESION</div>
+                                        <div class="absolute bottom-0 -right-4 text-[8px] font-bold text-slate-400">
+                                            TARGET</div>
+                                        <div class="absolute bottom-0 -left-6 text-[8px] font-bold text-slate-400">SPEED
+                                        </div>
+                                        <div class="absolute top-1/4 -left-10 text-[8px] font-bold text-slate-400">
+                                            SEPARATION</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <!-- Environment Card -->
+                        <section class="glass rounded-xl p-6">
+                            <div class="flex items-center gap-2 mb-6 border-b border-primary/10 pb-4">
+                                <span class="material-symbols-outlined text-primary">public</span>
+                                <h2 class="font-bold text-slate-100 uppercase tracking-widest text-xs">Environment</h2>
+                            </div>
+                            <div class="space-y-6">
+                                <div class="space-y-3">
+                                    <label
+                                        class="text-xs text-slate-400 block uppercase tracking-wider font-bold">Bounding
+                                        Volume (X, Y, Z meters)</label>
+                                    <div class="grid grid-cols-3 gap-4">
+                                        <div class="relative">
+                                            <input id="bounds-x"
+                                                class="w-full bg-background-dark/50 border-slate-700 rounded-lg text-sm font-mono focus:ring-primary pl-8"
+                                                type="text" value="500" aria-label="Bounding volume X axis" />
+                                            <span
+                                                class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold">X</span>
+                                        </div>
+                                        <div class="relative">
+                                            <input id="bounds-y"
+                                                class="w-full bg-background-dark/50 border-slate-700 rounded-lg text-sm font-mono focus:ring-primary pl-8"
+                                                type="text" value="500" aria-label="Bounding volume Y axis" />
+                                            <span
+                                                class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold">Y</span>
+                                        </div>
+                                        <div class="relative">
+                                            <input id="bounds-z"
+                                                class="w-full bg-background-dark/50 border-slate-700 rounded-lg text-sm font-mono focus:ring-primary pl-8"
+                                                type="text" value="200" aria-label="Bounding volume Z axis" />
+                                            <span
+                                                class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold">Z</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <label
+                                        class="text-xs text-slate-400 block uppercase tracking-wider font-bold">Global
+                                        Current Vector (m/s)</label>
+                                    <div class="grid grid-cols-3 gap-4">
+                                        <input id="current-x"
+                                            class="w-full bg-background-dark/50 border-slate-700 rounded-lg text-sm font-mono focus:ring-primary text-center"
+                                            type="text" value="0.2" aria-label="Current vector X component" />
+                                        <input id="current-y"
+                                            class="w-full bg-background-dark/50 border-slate-700 rounded-lg text-sm font-mono focus:ring-primary text-center"
+                                            type="text" value="-0.05" aria-label="Current vector Y component" />
+                                        <input id="current-z"
+                                            class="w-full bg-background-dark/50 border-slate-700 rounded-lg text-sm font-mono focus:ring-primary text-center"
+                                            type="text" value="0.0" aria-label="Current vector Z component" />
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Footer Notification Area -->
+        <footer class="h-14 bg-surface border-t border-primary/10 px-8 flex items-center justify-between">
+            <div class="flex gap-4">
+                <button
+                    class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-primary transition-colors"
+                    aria-label="Import configuration file">
+                    <span class="material-symbols-outlined text-[18px]">upload</span>
+                    IMPORT CONFIG
+                </button>
+                <button
+                    class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-primary transition-colors"
+                    aria-label="Export configuration file">
+                    <span class="material-symbols-outlined text-[18px]">download</span>
+                    EXPORT CONFIG
+                </button>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="text-xs font-mono text-slate-500 flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                    LOG: Swarm parameters synchronized successfully
+                </div>
+                <div class="h-4 w-[1px] bg-slate-700 mx-2"></div>
+                <div class="text-xs font-mono text-slate-500">
+                    V-STK: 0.992
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script src="nav.js"></script>
+</body>
+
+</html>

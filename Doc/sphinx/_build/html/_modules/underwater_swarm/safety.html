@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>underwater_swarm.safety &#8212; EssaimDrones 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for underwater_swarm.safety</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Safety module for the underwater drone swarm.</span>
+
+<span class="sd">This module defines the ``SafetyMonitor`` class, which is responsible for</span>
+<span class="sd">monitoring the safety status of each drone, including geofencing and</span>
+<span class="sd">collision risks.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">BOUNDS</span><span class="p">,</span> <span class="n">MAX_FORCE</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.drone</span><span class="w"> </span><span class="kn">import</span> <span class="n">Drone</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.environment</span><span class="w"> </span><span class="kn">import</span> <span class="n">Obstacle</span>
+
+
+<div class="viewcode-block" id="SafetyMonitor">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.safety.SafetyMonitor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SafetyMonitor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Monitors safety constraints for a drone.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        drone: The drone being monitored.</span>
+<span class="sd">        bounds: The environment boundaries.</span>
+<span class="sd">        min_safe_dist: Minimum safe distance to other objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">drone</span><span class="p">:</span> <span class="n">Drone</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">BOUNDS</span><span class="p">,</span>
+        <span class="n">min_safe_dist</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drone</span> <span class="o">=</span> <span class="n">drone</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="n">bounds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_safe_dist</span> <span class="o">=</span> <span class="n">min_safe_dist</span>
+
+<div class="viewcode-block" id="SafetyMonitor.check_geofence">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.safety.SafetyMonitor.check_geofence">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_geofence</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a correction force to push the drone back into bounds.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A force vector pushing the drone towards the interior.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">force</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">margin</span> <span class="o">=</span> <span class="mf">10.0</span>
+
+        <span class="c1"># X</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drone</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">margin</span><span class="p">:</span>
+            <span class="n">force</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">MAX_FORCE</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">drone</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">margin</span><span class="p">:</span>
+            <span class="n">force</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="n">MAX_FORCE</span>
+
+        <span class="c1"># Y</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drone</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">margin</span><span class="p">:</span>
+            <span class="n">force</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">MAX_FORCE</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">drone</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">margin</span><span class="p">:</span>
+            <span class="n">force</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-=</span> <span class="n">MAX_FORCE</span>
+
+        <span class="c1"># Z</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drone</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">margin</span><span class="p">:</span>
+            <span class="n">force</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">MAX_FORCE</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">drone</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">margin</span><span class="p">:</span>
+            <span class="n">force</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-=</span> <span class="n">MAX_FORCE</span>
+
+        <span class="k">return</span> <span class="n">force</span></div>
+
+
+<div class="viewcode-block" id="SafetyMonitor.check_collisions">
+<a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.safety.SafetyMonitor.check_collisions">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_collisions</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">neighbors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Drone</span><span class="p">],</span>
+        <span class="n">obstacles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Obstacle</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an avoidance force for imminent collisions.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            neighbors: List of nearby drones.</span>
+<span class="sd">            obstacles: List of nearby obstacles.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Avoidance force vector.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">force</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="c1"># Check drone neighbors</span>
+        <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drone</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">position</span>
+            <span class="n">dist</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">diff</span><span class="p">))</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_safe_dist</span><span class="p">:</span>
+                <span class="c1"># Emergency repulsion</span>
+                <span class="n">force</span> <span class="o">+=</span> <span class="p">(</span><span class="n">diff</span> <span class="o">/</span> <span class="n">dist</span><span class="p">)</span> <span class="o">*</span> <span class="n">MAX_FORCE</span> <span class="o">*</span> <span class="mf">2.0</span>
+
+        <span class="c1"># Check obstacles</span>
+        <span class="k">for</span> <span class="n">obs</span> <span class="ow">in</span> <span class="n">obstacles</span><span class="p">:</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drone</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="n">obs</span><span class="o">.</span><span class="n">position</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">diff</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">obs</span><span class="o">.</span><span class="n">radius</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_safe_dist</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dist</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">force</span> <span class="o">+=</span> <span class="p">(</span><span class="n">diff</span> <span class="o">/</span> <span class="n">dist</span><span class="p">)</span> <span class="o">*</span> <span class="n">MAX_FORCE</span> <span class="o">*</span> <span class="mf">3.0</span>
+
+        <span class="k">return</span> <span class="n">force</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">EssaimDrones</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Agent Antigravity.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.0.4</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

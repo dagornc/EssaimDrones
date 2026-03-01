@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>agent.orchestrator &#8212; EssaimDrones 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for agent.orchestrator</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Tactical Orchestrator for the Swarm using LangChain and LangGraph.</span>
+
+<span class="sd">This agent receives metrics from the swarm simulation and uses a LLM</span>
+<span class="sd">to decide whether to change the swarm&#39;s operational mode dynamically.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypedDict</span><span class="p">,</span> <span class="n">Annotated</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatOpenAI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">SystemMessage</span><span class="p">,</span> <span class="n">HumanMessage</span><span class="p">,</span> <span class="n">BaseMessage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">tool</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langgraph.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">StateGraph</span><span class="p">,</span> <span class="n">START</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langgraph.graph.message</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langgraph.prebuilt</span><span class="w"> </span><span class="kn">import</span> <span class="n">ToolNode</span><span class="p">,</span> <span class="n">tools_condition</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">underwater_swarm.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">SwarmMode</span>
+
+<span class="n">load_dotenv</span><span class="p">(</span><span class="n">override</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="AgentState">
+<a class="viewcode-back" href="../../agent.html#agent.orchestrator.AgentState">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AgentState</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;State dictionary for the LangGraph agent.&quot;&quot;&quot;</span>
+
+    <span class="n">messages</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">BaseMessage</span><span class="p">],</span> <span class="n">add_messages</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="SwarmOrchestrator">
+<a class="viewcode-back" href="../../agent.html#agent.orchestrator.SwarmOrchestrator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SwarmOrchestrator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Agent orchestrator for the Underwater Swarm.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation_ref</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the orchestrator with a reference to the simulation.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span> <span class="o">=</span> <span class="n">simulation_ref</span>
+
+        <span class="c1"># 1. Factory pattern for retrieving the correct LLM ChatModel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">llm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_llm</span><span class="p">()</span>
+
+        <span class="c1"># 2. Define tools bound to the simulation instance</span>
+        <span class="nd">@tool</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">change_swarm_mode</span><span class="p">(</span><span class="n">new_mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Changes the global behavior mode of the drone swarm.</span>
+
+<span class="sd">            Valid modes: PATROL, ATTACK, DEFEND, ENCIRCLE, SHIELD, SEARCH,</span>
+<span class="sd">            FLASH_EXPANSION, SCHOOLING, PREDATOR_PACK, EXPLORATION.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">mode_enum</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="p">(</span><span class="n">new_mode</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode_enum</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Swarm mode successfully changed to </span><span class="si">{</span><span class="n">mode_enum</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">new_mode</span><span class="si">}</span><span class="s2"> is not a valid SwarmMode.&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="p">[</span><span class="n">change_swarm_mode</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">llm_with_tools</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="o">.</span><span class="n">bind_tools</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">)</span>
+
+        <span class="c1"># 3. Build LangGraph</span>
+        <span class="n">builder</span> <span class="o">=</span> <span class="n">StateGraph</span><span class="p">(</span><span class="n">AgentState</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">agent_node</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">AgentState</span><span class="p">):</span>
+            <span class="n">messages</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">]</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_with_tools</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">response</span><span class="p">]}</span>
+
+        <span class="n">builder</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="n">agent_node</span><span class="p">)</span>
+        <span class="n">builder</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;tools&quot;</span><span class="p">,</span> <span class="n">ToolNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">))</span>
+
+        <span class="n">builder</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">START</span><span class="p">,</span> <span class="s2">&quot;agent&quot;</span><span class="p">)</span>
+        <span class="n">builder</span><span class="o">.</span><span class="n">add_conditional_edges</span><span class="p">(</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="n">tools_condition</span><span class="p">)</span>
+        <span class="n">builder</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;tools&quot;</span><span class="p">,</span> <span class="s2">&quot;agent&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">system_prompt</span> <span class="o">=</span> <span class="n">SystemMessage</span><span class="p">(</span>
+            <span class="n">content</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;You are the Tactical Commander of an underwater drone swarm.</span>
+<span class="s2">You receive real-time metrics about the swarm&#39;s performance.</span>
+<span class="s2">Based on parameters like cohesion, alignment, safety violations, you must decide</span>
+<span class="s2">if the swarm should change its behavior mode.</span>
+
+<span class="s2">Available tools:</span>
+<span class="s2">- change_swarm_mode(new_mode): Changes the swarm mode.</span>
+
+<span class="s2">Reasoning Examples:</span>
+<span class="s2">- If safety violations are high, consider switching to SCHOOLING to enforce spacing.</span>
+<span class="s2">- If in SEARCH mode and metrics suggest a find, you might transition.</span>
+<span class="s2">- Often, you don&#39;t need to change mode. Just output your analysis.</span>
+
+<span class="s2">Be concise. Do not change mode unless it is strategically sound.&quot;&quot;&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_llm</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChatOpenAI</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Strategy/Factory for the LLM based on environment.&quot;&quot;&quot;</span>
+        <span class="n">provider</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LLM_PROVIDER&quot;</span><span class="p">,</span> <span class="s2">&quot;openrouter&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s2">&quot;openrouter&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ChatOpenAI</span><span class="p">(</span>
+                <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://openrouter.ai/api/v1&quot;</span><span class="p">,</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OPENROUTER_API_KEY&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LLM_MODEL&quot;</span><span class="p">,</span> <span class="s2">&quot;google/gemini-2.0-flash-exp:free&quot;</span><span class="p">),</span>
+                <span class="n">default_headers</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;HTTP-Referer&quot;</span><span class="p">:</span> <span class="s2">&quot;https://votre-site.com&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;X-Title&quot;</span><span class="p">:</span> <span class="s2">&quot;Nom de votre application&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="c1"># Default fallback</span>
+        <span class="k">return</span> <span class="n">ChatOpenAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SwarmOrchestrator.analyze_metrics">
+<a class="viewcode-back" href="../../agent.html#agent.orchestrator.SwarmOrchestrator.analyze_metrics">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">analyze_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Invokes the LangGraph agent to analyze the current swarm metrics.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The final textual response of the LLM.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">mode</span> <span class="k">else</span> <span class="s2">&quot;None&quot;</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Current Swarm Metrics: </span><span class="si">{</span><span class="n">metrics</span><span class="si">}</span><span class="s2">. Current Mode: </span><span class="si">{</span><span class="n">current_mode</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="n">user_msg</span> <span class="o">=</span> <span class="n">HumanMessage</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">prompt</span><span class="p">)</span>
+
+        <span class="n">initial_state</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">system_prompt</span><span class="p">,</span> <span class="n">user_msg</span><span class="p">]}</span>
+        <span class="n">response_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">initial_state</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response_state</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">content</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">EssaimDrones</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Agent Antigravity.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.0.4</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

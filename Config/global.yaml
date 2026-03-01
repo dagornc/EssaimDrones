@@ -1,0 +1,129 @@
+simulation:
+  dt: 0.1
+  steps: 500
+
+physics:
+  water_density: 1025.0
+  drag_coeff: 1.0
+  drafting_bonus: 0.3
+
+drone:
+  max_speed: 12.5
+  max_force: 10.0
+  mass: 10.0
+  perception_radius: 15.0
+  crowding_radius: 5.0
+
+boids:
+  separation: 2.5
+  alignment: 1.0
+  cohesion: 1.0
+  target: 1.5
+  current: 0.5
+
+mode_params:
+  PATROL:
+    sep: 4.0
+    ali: 0.5
+    coh: 0.5
+    target: 0.5
+    speed_mult: 0.8
+  ATTACK:
+    sep: 1.5
+    ali: 2.0
+    coh: 1.0
+    target: 3.0
+    speed_mult: 1.2
+  DEFEND:
+    sep: 2.0
+    ali: 1.5
+    coh: 3.0
+    target: 0.2
+    speed_mult: 0.6
+  ENCIRCLE:
+    sep: 2.5
+    ali: 1.0
+    coh: 1.0
+    target: 1.0
+    speed_mult: 1.0
+  SHIELD:
+    sep: 3.0
+    ali: 2.0
+    coh: 2.0
+    target: 2.0
+    speed_mult: 1.0
+  SEARCH:
+    sep: 2.0
+    ali: 0.5
+    coh: 0.1
+    target: 0.0
+    speed_mult: 1.0
+  FLASH_EXPANSION:
+    sep: 10.0
+    ali: 0.0
+    coh: 0.0
+    target: 0.0
+    speed_mult: 5.0
+  SCHOOLING:
+    sep: 1.5
+    ali: 3.0
+    coh: 2.5
+    target: 1.0
+    speed_mult: 1.0
+  PREDATOR_PACK:
+    sep: 3.0
+    ali: 1.5
+    coh: 1.0
+    target: 4.0
+    speed_mult: 1.5
+  EXPLORATION:
+    sep: 8.0
+    ali: 0.2
+    coh: 0.0
+    target: 0.5
+    speed_mult: 0.8
+
+pso:
+  inertia: 0.7
+  cognitive: 1.5
+  social: 1.5
+
+flash:
+  duration: 2.0
+  cooldown: 10.0
+  trigger_dist: 10.0
+
+environment:
+  bounds: [100.0, 100.0, 100.0]
+
+# --- LLM Providers (Pattern DagBot) ---
+llm_providers:
+  openrouter:
+    display_name: "OpenRouter"
+    base_url: "https://openrouter.ai/api/v1"
+    api_key: "${OPENROUTER_API_KEY}"
+    default_model: "${LLM_MODEL:google/gemini-2.0-flash-exp:free}"
+    icon: "globe"
+    description: "Aggregator accessing many models (Google, Meta, Mistral, etc.)."
+    recommended: true
+    models:
+      - "google/gemini-2.0-flash-exp:free"
+      - "google/gemini-2.5-flash:free"
+      - "qwen/qwen3-next-80b-a3b-instruct:free"
+      - "z-ai/glm-4.5-air:free"
+      - "meta-llama/llama-3.3-70b-instruct:free"
+      - "deepseek/deepseek-chat-v3-0324:free"
+      - "mistralai/mistral-small-3.1-24b-instruct:free"
+
+  ollama:
+    display_name: "Ollama (Local)"
+    base_url: "http://127.0.0.1:11434/v1"
+    api_key: "ollama"
+    default_model: "llama3"
+    icon: "server"
+    description: "Run LLMs locally. Requires Ollama installed."
+    recommended: false
+    models:
+      - "llama3"
+      - "mistral"
+      - "gemma"

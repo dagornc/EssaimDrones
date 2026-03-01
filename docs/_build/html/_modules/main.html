@@ -7,14 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>main &mdash; EssaimDrones 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=8d563738"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -80,6 +80,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">underwater_swarm.simulation</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simulation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">underwater_swarm.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">SwarmMode</span>
 
+
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../main.html#main.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
@@ -93,16 +94,31 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--drones&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of drones&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--steps&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Simulation steps (only for non-interactive)&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no-viz&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Disable visualization&quot;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--mode&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;PATROL&quot;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PATROL&quot;</span><span class="p">,</span> <span class="s2">&quot;ATTACK&quot;</span><span class="p">,</span> <span class="s2">&quot;DEFEND&quot;</span><span class="p">,</span> <span class="s2">&quot;ENCIRCLE&quot;</span><span class="p">,</span> <span class="s2">&quot;SHIELD&quot;</span><span class="p">,</span> <span class="s2">&quot;SEARCH&quot;</span><span class="p">,</span> <span class="s2">&quot;FLASH_EXPANSION&quot;</span><span class="p">,</span> <span class="s2">&quot;SCHOOLING&quot;</span><span class="p">,</span> <span class="s2">&quot;PREDATOR_PACK&quot;</span><span class="p">,</span> <span class="s2">&quot;EXPLORATION&quot;</span><span class="p">],</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Initial Swarm combat mode&quot;</span><span class="p">)</span>
-    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--mode&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;PATROL&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;PATROL&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ATTACK&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;DEFEND&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ENCIRCLE&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;SHIELD&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;SEARCH&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;FLASH_EXPANSION&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;SCHOOLING&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PREDATOR_PACK&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;EXPLORATION&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Initial Swarm combat mode&quot;</span><span class="p">)</span>
+
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
-    
+
     <span class="n">mode_enum</span> <span class="o">=</span> <span class="n">SwarmMode</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">mode</span><span class="p">]</span>
-    
+
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initializing Swarm in </span><span class="si">{</span><span class="n">mode_enum</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> mode.&quot;</span><span class="p">)</span>
     <span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">num_drones</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">drones</span><span class="p">)</span>
     <span class="n">sim</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode_enum</span>
-    
+
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">no_viz</span><span class="p">:</span>
         <span class="c1"># Run headless</span>
         <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">steps</span><span class="p">)</span>
@@ -114,23 +130,23 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Qt5Agg&#39;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: Configured Qt5Agg backend.&quot;</span><span class="p">)</span>
-            <span class="k">except</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
                 <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: PyQt5 not found, falling back to default (likely MacOSX).&quot;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;macosx&#39;</span><span class="p">)</span>
-            <span class="k">except</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
                 <span class="k">pass</span>
-        
-        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Active Matplotlib Backend: </span><span class="si">{</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">get_backend</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        
+
         <span class="kn">from</span><span class="w"> </span><span class="nn">underwater_swarm.viz</span><span class="w"> </span><span class="kn">import</span> <span class="n">LiveVisualizer</span>
-        
+
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting Live Visualization...&quot;</span><span class="p">)</span>
         <span class="n">viz</span> <span class="o">=</span> <span class="n">LiveVisualizer</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
         <span class="n">viz</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -144,7 +160,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, CDagorn.</p>
+    <p>&#169; Copyright 2024-2026, CDagorn.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

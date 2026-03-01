@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>AquaSwarm Metrics &amp; Analytics</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#06d0f9",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0a1628",
+                        "surface-dark": "#0d1f3c",
+                        "card-dark": "rgba(13, 31, 60, 0.7)",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(13, 31, 60, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(6, 208, 249, 0.1);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(6, 208, 249, 0.2);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex overflow-hidden">
+    <!-- Left Sidebar -->
+    <aside class="w-16 flex flex-col items-center py-6 bg-surface-dark border-r border-primary/10 z-20">
+        <div class="mb-10 text-primary">
+            <span class="material-symbols-outlined text-4xl">scuba_diving</span>
+        </div>
+        <nav class="flex flex-col gap-8" aria-label="Main navigation">
+            <a href="dashboard.html" data-nav-target="dashboard.html"
+                class="text-slate-400 hover:text-primary transition-colors p-2 rounded-lg" aria-label="Dashboard">
+                <span class="material-symbols-outlined">dashboard</span>
+            </a>
+            <a href="metrics.html" data-nav-target="metrics.html" class="text-primary bg-primary/10 p-2 rounded-lg"
+                aria-label="Metrics" aria-current="page">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">analytics</span>
+            </a>
+            <a href="tactical.html" data-nav-target="tactical.html"
+                class="text-slate-400 hover:text-primary transition-colors p-2 rounded-lg" aria-label="3D Viewport">
+                <span class="material-symbols-outlined">navigation</span>
+            </a>
+            <a href="configuration.html" data-nav-target="configuration.html"
+                class="text-slate-400 hover:text-primary transition-colors p-2 rounded-lg" aria-label="Configuration">
+                <span class="material-symbols-outlined">target</span>
+            </a>
+            <a href="#" class="text-slate-400 hover:text-primary transition-colors mt-auto p-2 rounded-lg"
+                aria-label="Settings">
+                <span class="material-symbols-outlined">settings</span>
+            </a>
+        </nav>
+    </aside>
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Top Bar -->
+        <header class="h-16 flex items-center justify-between px-8 bg-surface-dark/50 border-b border-primary/10">
+            <div class="flex items-center gap-2 text-sm">
+                <span class="text-slate-400">AquaSwarm Command</span>
+                <span class="text-slate-500">/</span>
+                <span class="text-primary font-medium tracking-wide uppercase" data-i18n="nav.metrics">Metrics &amp;
+                    Analytics</span>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-2 bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                    <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    <span class="text-primary text-xs font-bold uppercase tracking-widest">30 Drones Status:
+                        Nominal</span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-300 font-mono text-sm">
+                    <span class="material-symbols-outlined text-sm">schedule</span>
+                    <span>14:32:05 UTC</span>
+                </div>
+                <button id="theme-toggle" class="p-2 text-slate-400 hover:text-white rounded"
+                    aria-label="Toggle dark mode">
+                    <span class="material-symbols-outlined">dark_mode</span>
+                </button>
+                <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 overflow-hidden">
+                    <img alt="User Profile" class="w-full h-full object-cover"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSrcHVbYfrnvYKZOoyII5ROfRoQPQtw63PEP3CcgFvuxUNNKcVaDgRJ1JOCnrtXgeoI3MFOJn1Yz2gXupzOPObg7rRoLNPIbb3rgkChQMjgdwU5lFepiTpodkZ1ryfEh0Ikxb-i_11wTnRiisV4Xz5uBQUduW8gpuarxyuiS5ibG8tkhncfP8TpUg69E-KKh6bJf2NlzpuihsM2ooyEvh1o-FLkwOW01EZceJaKBOJNULfY0fvtA0NQppv7LrKwKyttnZL1NvFvpaf" />
+                </div>
+            </div>
+        </header>
+        <!-- Dashboard Content -->
+        <div class="flex-1 overflow-y-auto p-6 custom-scrollbar">
+            <div class="max-w-[1600px] mx-auto space-y-6">
+                <!-- Row 1: Key Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Cohesion -->
+                    <div class="glass-card rounded-xl p-5 flex flex-col gap-4">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Cohesion Over Time
+                            </h3>
+                            <span class="text-2xl font-bold text-primary">12.8m</span>
+                        </div>
+                        <div class="h-32 w-full relative">
+                            <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 400 100">
+                                <defs>
+                                    <linearGradient id="cyan-grad" x1="0" x2="0" y1="0" y2="1">
+                                        <stop offset="0%" stop-color="#06d0f9" stop-opacity="0.3"></stop>
+                                        <stop offset="100%" stop-color="#06d0f9" stop-opacity="0"></stop>
+                                    </linearGradient>
+                                </defs>
+                                <path
+                                    d="M0,80 C50,70 100,90 150,60 C200,30 250,50 300,40 L350,20 L400,30 L400,100 L0,100 Z"
+                                    fill="url(#cyan-grad)"></path>
+                                <path d="M0,80 C50,70 100,90 150,60 C200,30 250,50 300,40 L350,20 L400,30" fill="none"
+                                    stroke="#06d0f9" stroke-width="2"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <!-- Alignment -->
+                    <div class="glass-card rounded-xl p-5 flex flex-col gap-4">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Alignment Order
+                                Parameter</h3>
+                            <span class="text-2xl font-bold text-emerald-400">0.87</span>
+                        </div>
+                        <div class="h-32 w-full">
+                            <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 400 100">
+                                <path
+                                    d="M0,50 L40,45 L80,48 L120,42 L160,35 L200,38 L240,30 L280,25 L320,28 L360,22 L400,20"
+                                    fill="none" stroke="#34d399" stroke-width="2"></path>
+                                <circle cx="400" cy="20" fill="#34d399" r="3"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                    <!-- Safety Violations -->
+                    <div class="glass-card rounded-xl p-5 flex flex-col gap-4">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider"
+                                data-i18n="kpi.violations">Safety Violations</h3>
+                            <span class="text-2xl font-bold text-orange-500">0</span>
+                        </div>
+                        <div class="h-32 w-full flex items-end gap-1 px-2">
+                            <div class="bg-orange-500/20 w-full h-[10%] rounded-t-sm"></div>
+                            <div class="bg-orange-500/40 w-full h-[30%] rounded-t-sm"></div>
+                            <div class="bg-orange-500/20 w-full h-[15%] rounded-t-sm"></div>
+                            <div class="bg-orange-500/20 w-full h-[5%] rounded-t-sm"></div>
+                            <div class="bg-orange-500/10 w-full h-[0%] rounded-t-sm"></div>
+                            <div class="bg-orange-500/20 w-full h-[10%] rounded-t-sm"></div>
+                            <div class="bg-orange-500/60 w-full h-[45%] rounded-t-sm"></div>
+                            <div class="bg-orange-500/20 w-full h-[5%] rounded-t-sm"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row 2: Distribution & Spatial -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Velocity Distribution -->
+                    <div class="glass-card rounded-xl p-5">
+                        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-6">Drone Velocity
+                            Distribution (m/s)</h3>
+                        <div class="h-64 w-full flex items-end gap-2 pb-6 border-b border-primary/5">
+                            <div class="flex-1 bg-primary/10 h-[20%] rounded-t-lg transition-all hover:bg-primary/30">
+                            </div>
+                            <div class="flex-1 bg-primary/20 h-[45%] rounded-t-lg transition-all hover:bg-primary/30">
+                            </div>
+                            <div class="flex-1 bg-primary/40 h-[70%] rounded-t-lg transition-all hover:bg-primary/60">
+                            </div>
+                            <div class="flex-1 bg-primary/60 h-[85%] rounded-t-lg transition-all hover:bg-primary/80">
+                            </div>
+                            <div class="flex-1 bg-primary h-[95%] rounded-t-lg transition-all hover:bg-primary/80">
+                            </div>
+                            <div class="flex-1 bg-primary/50 h-[60%] rounded-t-lg transition-all hover:bg-primary/30">
+                            </div>
+                            <div class="flex-1 bg-primary/20 h-[30%] rounded-t-lg transition-all hover:bg-primary/30">
+                            </div>
+                        </div>
+                        <div class="flex justify-between mt-2 text-xs font-mono text-slate-500 uppercase">
+                            <span>0 m/s</span>
+                            <span>2.5</span>
+                            <span>5.0</span>
+                            <span>7.5</span>
+                            <span>10.0</span>
+                            <span>12.5 m/s</span>
+                        </div>
+                    </div>
+                    <!-- Spatial Coverage Heatmap -->
+                    <div class="glass-card rounded-xl p-5">
+                        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-6">Spatial Coverage
+                            Heatmap (X-Y Plane)</h3>
+                        <div class="h-64 w-full rounded-lg relative overflow-hidden bg-slate-900/50">
+                            <div
+                                class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_40%_50%,_#06d0f9_0%,_transparent_40%),radial-gradient(circle_at_70%_30%,_#fbbf24_0%,_transparent_30%),radial-gradient(circle_at_20%_80%,_#06d0f9_0%,_transparent_20%)]">
+                            </div>
+                            <div
+                                class="absolute inset-0 border border-primary/5 bg-[linear-gradient(rgba(6,208,249,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(6,208,249,0.05)_1px,transparent_1px)] bg-[size:20px_20px]">
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 mt-4">
+                            <span class="text-xs text-slate-500 font-mono">DENSITY</span>
+                            <div
+                                class="h-2 flex-1 rounded-full bg-gradient-to-r from-blue-900 via-primary to-yellow-400">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row 3: Timeline & Telemetry -->
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                    <!-- Mode Usage Timeline -->
+                    <div class="glass-card rounded-xl p-5 lg:col-span-2">
+                        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-6">Mode Usage Timeline
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4">
+                                <span class="w-16 text-xs text-slate-400 font-mono">PATROL</span>
+                                <div class="h-4 flex-1 bg-slate-800 rounded-full overflow-hidden flex">
+                                    <div class="bg-primary h-full w-[40%]"></div>
+                                    <div class="bg-transparent h-full w-[20%]"></div>
+                                    <div class="bg-primary h-full w-[30%]"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="w-16 text-xs text-slate-400 font-mono">ATTACK</span>
+                                <div class="h-4 flex-1 bg-slate-800 rounded-full overflow-hidden flex">
+                                    <div class="bg-transparent h-full w-[40%]"></div>
+                                    <div class="bg-orange-500 h-full w-[10%]"></div>
+                                    <div class="bg-transparent h-full w-[50%]"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="w-16 text-xs text-slate-400 font-mono">RECHARGE</span>
+                                <div class="h-4 flex-1 bg-slate-800 rounded-full overflow-hidden flex">
+                                    <div class="bg-transparent h-full w-[50%]"></div>
+                                    <div class="bg-emerald-500 h-full w-[15%]"></div>
+                                    <div class="bg-transparent h-full w-[35%]"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="w-16 text-xs text-slate-400 font-mono">AVOID</span>
+                                <div class="h-4 flex-1 bg-slate-800 rounded-full overflow-hidden flex">
+                                    <div class="bg-transparent h-full w-[10%]"></div>
+                                    <div class="bg-blue-400 h-full w-[5%]"></div>
+                                    <div class="bg-transparent h-full w-[20%]"></div>
+                                    <div class="bg-blue-400 h-full w-[8%]"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Per-Drone Telemetry -->
+                    <div class="glass-card rounded-xl p-5 lg:col-span-3">
+                        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-4">Per-Drone Telemetry
+                        </h3>
+                        <div class="overflow-x-auto h-48 custom-scrollbar">
+                            <table class="w-full text-left font-mono text-sm border-separate border-spacing-0">
+                                <thead>
+                                    <tr class="text-slate-500 text-xs uppercase border-b border-primary/10">
+                                        <th class="pb-2 px-4 sticky top-0 bg-surface-dark/90">Drone ID</th>
+                                        <th class="pb-2 px-4 sticky top-0 bg-surface-dark/90 text-center">Position
+                                            (X,Y,Z)</th>
+                                        <th class="pb-2 px-4 sticky top-0 bg-surface-dark/90 text-center">Speed</th>
+                                        <th class="pb-2 px-4 sticky top-0 bg-surface-dark/90 text-right">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-primary/5">
+                                    <tr class="hover:bg-primary/5 transition-colors group">
+                                        <td class="py-3 px-4 text-primary font-bold">AS-001</td>
+                                        <td class="py-3 px-4 text-center">142.1, -84.2, -12.0</td>
+                                        <td class="py-3 px-4 text-center">12.2 m/s</td>
+                                        <td class="py-3 px-4 text-right">
+                                            <span
+                                                class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2 shadow-[0_0_8px_#34d399]"></span>
+                                            <span class="text-xs">ACTIVE</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-primary/5 transition-colors group bg-slate-800/20">
+                                        <td class="py-3 px-4 text-primary font-bold">AS-002</td>
+                                        <td class="py-3 px-4 text-center">139.5, -81.0, -11.8</td>
+                                        <td class="py-3 px-4 text-center">12.5 m/s</td>
+                                        <td class="py-3 px-4 text-right">
+                                            <span
+                                                class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2 shadow-[0_0_8px_#34d399]"></span>
+                                            <span class="text-xs">ACTIVE</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-primary/5 transition-colors group">
+                                        <td class="py-3 px-4 text-primary font-bold">AS-003</td>
+                                        <td class="py-3 px-4 text-center">144.2, -79.4, -12.5</td>
+                                        <td class="py-3 px-4 text-center">11.8 m/s</td>
+                                        <td class="py-3 px-4 text-right">
+                                            <span
+                                                class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2 shadow-[0_0_8px_#34d399]"></span>
+                                            <span class="text-xs">ACTIVE</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-primary/5 transition-colors group bg-slate-800/20">
+                                        <td class="py-3 px-4 text-primary font-bold">AS-004</td>
+                                        <td class="py-3 px-4 text-center">140.0, -82.6, -12.2</td>
+                                        <td class="py-3 px-4 text-center">12.1 m/s</td>
+                                        <td class="py-3 px-4 text-right">
+                                            <span
+                                                class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2 shadow-[0_0_8px_#34d399]"></span>
+                                            <span class="text-xs">ACTIVE</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="nav.js"></script>
+</body>
+
+</html>

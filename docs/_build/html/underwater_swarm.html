@@ -8,14 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>underwater_swarm package &mdash; EssaimDrones 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=8d563738"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -60,6 +60,14 @@
 <li class="toctree-l4"><a class="reference internal" href="#underwater_swarm.environment.Obstacle"><code class="docutils literal notranslate"><span class="pre">Obstacle</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#module-underwater_swarm.metrics">underwater_swarm.metrics module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#underwater_swarm.metrics.PerformanceMonitor"><code class="docutils literal notranslate"><span class="pre">PerformanceMonitor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-underwater_swarm.safety">underwater_swarm.safety module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#underwater_swarm.safety.SafetyMonitor"><code class="docutils literal notranslate"><span class="pre">SafetyMonitor</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-underwater_swarm.simulation">underwater_swarm.simulation module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#underwater_swarm.simulation.Simulation"><code class="docutils literal notranslate"><span class="pre">Simulation</span></code></a></li>
 </ul>
@@ -73,7 +81,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#underwater_swarm.viz.animate_swarm"><code class="docutils literal notranslate"><span class="pre">animate_swarm()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-underwater_swarm">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -118,8 +126,8 @@ throughout the simulation, including physics parameters, drone specifications,
 swarm behavior weights, and environment bounds.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="underwater_swarm.config.SwarmMode">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">underwater_swarm.config.</span></span><span class="sig-name descname"><span class="pre">SwarmMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/config.html#SwarmMode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.config.SwarmMode" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">underwater_swarm.config.</span></span><span class="sig-name descname"><span class="pre">SwarmMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/config.html#SwarmMode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.config.SwarmMode" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
 <p>Defines the operational modes for the drone swarm.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.config.SwarmMode.PATROL">
@@ -183,52 +191,52 @@ swarm behavior weights, and environment bounds.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">ATTACK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ATTACK'</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ATTACK</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ATTACK'</span></span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">DEFEND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DEFEND'</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DEFEND</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DEFEND'</span></span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">ENCIRCLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ENCIRCLE'</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ENCIRCLE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ENCIRCLE'</span></span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">EXPLORATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'EXPLORATION'</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">EXPLORATION</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'EXPLORATION'</span></span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">FLASH_EXPANSION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'FLASH_EXPANSION'</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">FLASH_EXPANSION</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'FLASH_EXPANSION'</span></span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">PATROL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PATROL'</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">PATROL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PATROL'</span></span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id6">
-<span class="sig-name descname"><span class="pre">PREDATOR_PACK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PREDATOR_PACK'</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">PREDATOR_PACK</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PREDATOR_PACK'</span></span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id7">
-<span class="sig-name descname"><span class="pre">SCHOOLING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SCHOOLING'</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">SCHOOLING</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SCHOOLING'</span></span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id8">
-<span class="sig-name descname"><span class="pre">SEARCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SEARCH'</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">SEARCH</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SEARCH'</span></span><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id9">
-<span class="sig-name descname"><span class="pre">SHIELD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SHIELD'</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">SHIELD</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SHIELD'</span></span><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -237,171 +245,114 @@ swarm behavior weights, and environment bounds.</p>
 <section id="module-underwater_swarm.drone">
 <span id="underwater-swarm-drone-module"></span><h2>underwater_swarm.drone module<a class="headerlink" href="#module-underwater_swarm.drone" title="Link to this heading"></a></h2>
 <p>Defines the Drone agent class.</p>
-<p>This module contains the <cite>Drone</cite> class, which represents an individual agent
+<p>This module contains the <code class="docutils literal notranslate"><span class="pre">Drone</span></code> class, which represents an individual agent
 in the swarm simulation. It handles physics integration, force application,
 and state management for various behaviors.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">underwater_swarm.drone.</span></span><span class="sig-name descname"><span class="pre">Drone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/drone.html#Drone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.drone.Drone" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">underwater_swarm.drone.</span></span><span class="sig-name descname"><span class="pre">Drone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/drone.html#Drone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.drone.Drone" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Represents a single underwater drone agent.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.id">
 <span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#underwater_swarm.drone.Drone.id" title="Link to this definition"></a></dt>
 <dd><p>Unique identifier for the drone.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.position">
 <span class="sig-name descname"><span class="pre">position</span></span><a class="headerlink" href="#underwater_swarm.drone.Drone.position" title="Link to this definition"></a></dt>
-<dd><p>3D position vector [x, y, z].</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
+<dd><p>3D position vector <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y,</span> <span class="pre">z]</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.velocity">
 <span class="sig-name descname"><span class="pre">velocity</span></span><a class="headerlink" href="#underwater_swarm.drone.Drone.velocity" title="Link to this definition"></a></dt>
-<dd><p>3D velocity vector [vx, vy, vz].</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
+<dd><p>3D velocity vector <code class="docutils literal notranslate"><span class="pre">[vx,</span> <span class="pre">vy,</span> <span class="pre">vz]</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.acceleration">
 <span class="sig-name descname"><span class="pre">acceleration</span></span><a class="headerlink" href="#underwater_swarm.drone.Drone.acceleration" title="Link to this definition"></a></dt>
-<dd><p>3D acceleration vector [ax, ay, az].</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
+<dd><p>3D acceleration vector <code class="docutils literal notranslate"><span class="pre">[ax,</span> <span class="pre">ay,</span> <span class="pre">az]</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.mass">
 <span class="sig-name descname"><span class="pre">mass</span></span><a class="headerlink" href="#underwater_swarm.drone.Drone.mass" title="Link to this definition"></a></dt>
 <dd><p>Mass of the drone in kg.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.drag_factor">
 <span class="sig-name descname"><span class="pre">drag_factor</span></span><a class="headerlink" href="#underwater_swarm.drone.Drone.drag_factor" title="Link to this definition"></a></dt>
 <dd><p>Multiplier for drag calculation (used for drafting).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.pso_best_position">
 <span class="sig-name descname"><span class="pre">pso_best_position</span></span><a class="headerlink" href="#underwater_swarm.drone.Drone.pso_best_position" title="Link to this definition"></a></dt>
 <dd><p>Best known position for PSO.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.pso_best_score">
 <span class="sig-name descname"><span class="pre">pso_best_score</span></span><a class="headerlink" href="#underwater_swarm.drone.Drone.pso_best_score" title="Link to this definition"></a></dt>
 <dd><p>Best known score for PSO.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.flash_timer">
 <span class="sig-name descname"><span class="pre">flash_timer</span></span><a class="headerlink" href="#underwater_swarm.drone.Drone.flash_timer" title="Link to this definition"></a></dt>
 <dd><p>Timer for flash expansion behavior.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.flash_direction">
 <span class="sig-name descname"><span class="pre">flash_direction</span></span><a class="headerlink" href="#underwater_swarm.drone.Drone.flash_direction" title="Link to this definition"></a></dt>
 <dd><p>Direction vector for flash expansion.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.safety">
 <span class="sig-name descname"><span class="pre">safety</span></span><a class="headerlink" href="#underwater_swarm.drone.Drone.safety" title="Link to this definition"></a></dt>
 <dd><p>Safety module for the drone.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>SafetyMonitor</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.apply_drag">
-<span class="sig-name descname"><span class="pre">apply_drag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fluid_velocity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/drone.html#Drone.apply_drag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.drone.Drone.apply_drag" title="Link to this definition"></a></dt>
-<dd><p>Applies hydrodynamic drag force based on relative velocity.</p>
-<p>Calculates drag using a simplified quadratic drag equation:
-F_d = -0.5 * rho * Cd * A * v^2 * unit_vector(v)</p>
+<span class="sig-name descname"><span class="pre">apply_drag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fluid_velocity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/drone.html#Drone.apply_drag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.drone.Drone.apply_drag" title="Link to this definition"></a></dt>
+<dd><p>Applies hydrodynamic drag based on relative velocity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fluid_velocity</strong> (<em>np.ndarray</em>) – Velocity vector of the surrounding fluid.</p>
+<dd class="field-odd"><p><strong>fluid_velocity</strong> – Velocity vector of the surrounding fluid.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.apply_force">
-<span class="sig-name descname"><span class="pre">apply_force</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/drone.html#Drone.apply_force"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.drone.Drone.apply_force" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">apply_force</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/drone.html#Drone.apply_force"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.drone.Drone.apply_force" title="Link to this definition"></a></dt>
 <dd><p>Applies a force vector to the drone.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>force</strong> (<em>np.ndarray</em>) – 3D force vector to apply.</p>
+<dd class="field-odd"><p><strong>force</strong> – 3D force vector to apply.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.calculate_forces">
-<span class="sig-name descname"><span class="pre">calculate_forces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neighbors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">friends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/drone.html#Drone.calculate_forces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.drone.Drone.calculate_forces" title="Link to this definition"></a></dt>
-<dd><p>Calculates the net force based on local perception and current mode.</p>
+<span class="sig-name descname"><span class="pre">calculate_forces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neighbors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#underwater_swarm.drone.Drone" title="underwater_swarm.drone.Drone"><span class="pre">Drone</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#underwater_swarm.environment.Environment" title="underwater_swarm.environment.Environment"><span class="pre">Environment</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">np.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">friends</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">np.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#underwater_swarm.config.SwarmMode" title="underwater_swarm.config.SwarmMode"><span class="pre">SwarmMode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/drone.html#Drone.calculate_forces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.drone.Drone.calculate_forces" title="Link to this definition"></a></dt>
+<dd><p>Calculates the net force based on local perception and mode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>neighbors</strong> (<em>list</em><em>[</em><a class="reference internal" href="#underwater_swarm.drone.Drone" title="underwater_swarm.drone.Drone"><em>Drone</em></a><em>]</em>) – List of nearby drones.</p></li>
-<li><p><strong>environment</strong> (<a class="reference internal" href="#underwater_swarm.environment.Environment" title="underwater_swarm.environment.Environment"><em>Environment</em></a>) – The simulation environment.</p></li>
-<li><p><strong>targets</strong> (<em>list</em><em>[</em><em>np.ndarray</em><em>]</em>) – List of enemy/target positions.</p></li>
-<li><p><strong>friends</strong> (<em>list</em><em>[</em><em>np.ndarray</em><em>]</em>) – List of friendly unit positions.</p></li>
-<li><p><strong>mode</strong> (<a class="reference internal" href="#underwater_swarm.config.SwarmMode" title="underwater_swarm.config.SwarmMode"><em>SwarmMode</em></a>) – Current behavior mode.</p></li>
+<li><p><strong>neighbors</strong> – List of nearby drones.</p></li>
+<li><p><strong>environment</strong> – The simulation environment.</p></li>
+<li><p><strong>targets</strong> – List of enemy/target positions.</p></li>
+<li><p><strong>friends</strong> – List of friendly unit positions.</p></li>
+<li><p><strong>mode</strong> – Current behavior mode.</p></li>
 </ul>
 </dd>
 </dl>
@@ -409,14 +360,11 @@ F_d = -0.5 * rho * Cd * A * v^2 * unit_vector(v)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="underwater_swarm.drone.Drone.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/drone.html#Drone.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.drone.Drone.update" title="Link to this definition"></a></dt>
-<dd><p>Updates the drone’s physics state using Euler integration.</p>
-<p>Calculates the new velocity and position based on accumulated forces
-(acceleration), applies speed limits, and resets the acceleration
-accumulator for the next step.</p>
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/drone.html#Drone.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.drone.Drone.update" title="Link to this definition"></a></dt>
+<dd><p>Updates drone physics using Euler integration.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dt</strong> (<em>float</em>) – Time step in seconds.</p>
+<dd class="field-odd"><p><strong>dt</strong> – Time step in seconds.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -431,51 +379,36 @@ accumulator for the next step.</p>
 currents (fluid dynamics), and obstacles.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="underwater_swarm.environment.Environment">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">underwater_swarm.environment.</span></span><span class="sig-name descname"><span class="pre">Environment</span></span><a class="reference internal" href="_modules/underwater_swarm/environment.html#Environment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.environment.Environment" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">underwater_swarm.environment.</span></span><span class="sig-name descname"><span class="pre">Environment</span></span><a class="reference internal" href="_modules/underwater_swarm/environment.html#Environment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.environment.Environment" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Manages the simulation environment parameters.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.environment.Environment.bounds">
 <span class="sig-name descname"><span class="pre">bounds</span></span><a class="headerlink" href="#underwater_swarm.environment.Environment.bounds" title="Link to this definition"></a></dt>
 <dd><p>3D vector defining the size of the environment box.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.environment.Environment.global_current">
 <span class="sig-name descname"><span class="pre">global_current</span></span><a class="headerlink" href="#underwater_swarm.environment.Environment.global_current" title="Link to this definition"></a></dt>
 <dd><p>Base vector for the global water current.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.environment.Environment.obstacles">
 <span class="sig-name descname"><span class="pre">obstacles</span></span><a class="headerlink" href="#underwater_swarm.environment.Environment.obstacles" title="Link to this definition"></a></dt>
 <dd><p>List of obstacles in the environment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="#underwater_swarm.environment.Obstacle" title="underwater_swarm.environment.Obstacle">Obstacle</a>]</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="underwater_swarm.environment.Environment.add_obstacle">
-<span class="sig-name descname"><span class="pre">add_obstacle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/environment.html#Environment.add_obstacle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.environment.Environment.add_obstacle" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_obstacle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/environment.html#Environment.add_obstacle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.environment.Environment.add_obstacle" title="Link to this definition"></a></dt>
 <dd><p>Adds a spherical obstacle to the environment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>position</strong> (<em>list</em><em> or </em><em>np.ndarray</em>) – Center position [x, y, z].</p></li>
-<li><p><strong>radius</strong> (<em>float</em><em>, </em><em>optional</em>) – Radius of the obstacle. Defaults to 10.0.</p></li>
+<li><p><strong>position</strong> – Center position <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y,</span> <span class="pre">z]</span></code>.</p></li>
+<li><p><strong>radius</strong> – Radius of the obstacle.</p></li>
 </ul>
 </dd>
 </dl>
@@ -483,34 +416,30 @@ currents (fluid dynamics), and obstacles.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="underwater_swarm.environment.Environment.check_bounds">
-<span class="sig-name descname"><span class="pre">check_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/environment.html#Environment.check_bounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.environment.Environment.check_bounds" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/environment.html#Environment.check_bounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.environment.Environment.check_bounds" title="Link to this definition"></a></dt>
 <dd><p>Checks if a position is within the environment bounds.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Currently a placeholder. Boundary enforcement is handled by
-steering forces in the swarm logic.</p>
+<p>Placeholder. Boundary enforcement is handled by steering forces.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – Position to check.</p>
+<dd class="field-odd"><p><strong>position</strong> – Position to check.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="underwater_swarm.environment.Environment.get_current">
-<span class="sig-name descname"><span class="pre">get_current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/environment.html#Environment.get_current"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.environment.Environment.get_current" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/environment.html#Environment.get_current"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.environment.Environment.get_current" title="Link to this definition"></a></dt>
 <dd><p>Calculates the water current velocity at a specific position.</p>
 <p>Combines the global base current with spatially varying turbulence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – Position to sample the current at.</p>
+<dd class="field-odd"><p><strong>position</strong> – Position to sample the current at.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>3D current velocity vector.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -519,27 +448,129 @@ steering forces in the swarm logic.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="underwater_swarm.environment.Obstacle">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">underwater_swarm.environment.</span></span><span class="sig-name descname"><span class="pre">Obstacle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/environment.html#Obstacle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.environment.Obstacle" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">underwater_swarm.environment.</span></span><span class="sig-name descname"><span class="pre">Obstacle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/environment.html#Obstacle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.environment.Obstacle" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Represents a spherical obstacle in the environment.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.environment.Obstacle.position">
 <span class="sig-name descname"><span class="pre">position</span></span><a class="headerlink" href="#underwater_swarm.environment.Obstacle.position" title="Link to this definition"></a></dt>
 <dd><p>3D position of the obstacle center.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.environment.Obstacle.radius">
 <span class="sig-name descname"><span class="pre">radius</span></span><a class="headerlink" href="#underwater_swarm.environment.Obstacle.radius" title="Link to this definition"></a></dt>
 <dd><p>Radius of the obstacle.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-underwater_swarm.metrics">
+<span id="underwater-swarm-metrics-module"></span><h2>underwater_swarm.metrics module<a class="headerlink" href="#module-underwater_swarm.metrics" title="Link to this heading"></a></h2>
+<p>Performance metrics for the underwater drone swarm.</p>
+<p>This module defines the <code class="docutils literal notranslate"><span class="pre">PerformanceMonitor</span></code> class, which calculates
+metrics such as formation stability, cohesion, and area coverage.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="underwater_swarm.metrics.PerformanceMonitor">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">underwater_swarm.metrics.</span></span><span class="sig-name descname"><span class="pre">PerformanceMonitor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#underwater_swarm.simulation.Simulation" title="underwater_swarm.simulation.Simulation"><span class="pre">Simulation</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/metrics.html#PerformanceMonitor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.metrics.PerformanceMonitor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Calculates performance metrics for the swarm.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="underwater_swarm.metrics.PerformanceMonitor.sim">
+<span class="sig-name descname"><span class="pre">sim</span></span><a class="headerlink" href="#underwater_swarm.metrics.PerformanceMonitor.sim" title="Link to this definition"></a></dt>
+<dd><p>The simulation instance to monitor.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="underwater_swarm.metrics.PerformanceMonitor.calculate_alignment">
+<span class="sig-name descname"><span class="pre">calculate_alignment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/metrics.html#PerformanceMonitor.calculate_alignment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.metrics.PerformanceMonitor.calculate_alignment" title="Link to this definition"></a></dt>
+<dd><p>Calculates the alignment of the swarm (order parameter).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Magnitude of the average normalized velocity (0 to 1).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="underwater_swarm.metrics.PerformanceMonitor.calculate_cohesion">
+<span class="sig-name descname"><span class="pre">calculate_cohesion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/metrics.html#PerformanceMonitor.calculate_cohesion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.metrics.PerformanceMonitor.calculate_cohesion" title="Link to this definition"></a></dt>
+<dd><p>Calculates the average distance of drones from the swarm center.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Average distance to centroid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="underwater_swarm.metrics.PerformanceMonitor.calculate_safety_violations">
+<span class="sig-name descname"><span class="pre">calculate_safety_violations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/metrics.html#PerformanceMonitor.calculate_safety_violations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.metrics.PerformanceMonitor.calculate_safety_violations" title="Link to this definition"></a></dt>
+<dd><p>Counts the number of safety violations (collisions, OOB).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Total number of active violations.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-underwater_swarm.safety">
+<span id="underwater-swarm-safety-module"></span><h2>underwater_swarm.safety module<a class="headerlink" href="#module-underwater_swarm.safety" title="Link to this heading"></a></h2>
+<p>Safety module for the underwater drone swarm.</p>
+<p>This module defines the <code class="docutils literal notranslate"><span class="pre">SafetyMonitor</span></code> class, which is responsible for
+monitoring the safety status of each drone, including geofencing and
+collision risks.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="underwater_swarm.safety.SafetyMonitor">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">underwater_swarm.safety.</span></span><span class="sig-name descname"><span class="pre">SafetyMonitor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drone</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#underwater_swarm.drone.Drone" title="underwater_swarm.drone.Drone"><span class="pre">Drone</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">np.ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">array([100,</span> <span class="pre">100,</span> <span class="pre">100])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_safe_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/safety.html#SafetyMonitor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.safety.SafetyMonitor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Monitors safety constraints for a drone.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="underwater_swarm.safety.SafetyMonitor.drone">
+<span class="sig-name descname"><span class="pre">drone</span></span><a class="headerlink" href="#underwater_swarm.safety.SafetyMonitor.drone" title="Link to this definition"></a></dt>
+<dd><p>The drone being monitored.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="underwater_swarm.safety.SafetyMonitor.bounds">
+<span class="sig-name descname"><span class="pre">bounds</span></span><a class="headerlink" href="#underwater_swarm.safety.SafetyMonitor.bounds" title="Link to this definition"></a></dt>
+<dd><p>The environment boundaries.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="underwater_swarm.safety.SafetyMonitor.min_safe_dist">
+<span class="sig-name descname"><span class="pre">min_safe_dist</span></span><a class="headerlink" href="#underwater_swarm.safety.SafetyMonitor.min_safe_dist" title="Link to this definition"></a></dt>
+<dd><p>Minimum safe distance to other objects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="underwater_swarm.safety.SafetyMonitor.check_collisions">
+<span class="sig-name descname"><span class="pre">check_collisions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neighbors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#underwater_swarm.drone.Drone" title="underwater_swarm.drone.Drone"><span class="pre">Drone</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obstacles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#underwater_swarm.environment.Obstacle" title="underwater_swarm.environment.Obstacle"><span class="pre">Obstacle</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.ndarray</span></span></span><a class="reference internal" href="_modules/underwater_swarm/safety.html#SafetyMonitor.check_collisions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.safety.SafetyMonitor.check_collisions" title="Link to this definition"></a></dt>
+<dd><p>Returns an avoidance force for imminent collisions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>neighbors</strong> – List of nearby drones.</p></li>
+<li><p><strong>obstacles</strong> – List of nearby obstacles.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Avoidance force vector.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="underwater_swarm.safety.SafetyMonitor.check_geofence">
+<span class="sig-name descname"><span class="pre">check_geofence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/safety.html#SafetyMonitor.check_geofence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.safety.SafetyMonitor.check_geofence" title="Link to this definition"></a></dt>
+<dd><p>Returns a correction force to push the drone back into bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A force vector pushing the drone towards the interior.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -554,123 +585,89 @@ steering forces in the swarm logic.</p>
 environment, and the swarm controller, as well as the main time-stepping loop.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="underwater_swarm.simulation.Simulation">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">underwater_swarm.simulation.</span></span><span class="sig-name descname"><span class="pre">Simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_drones</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/simulation.html#Simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.simulation.Simulation" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">underwater_swarm.simulation.</span></span><span class="sig-name descname"><span class="pre">Simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_drones</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/simulation.html#Simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.simulation.Simulation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Controls the simulation state and execution.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.simulation.Simulation.drones">
 <span class="sig-name descname"><span class="pre">drones</span></span><a class="headerlink" href="#underwater_swarm.simulation.Simulation.drones" title="Link to this definition"></a></dt>
 <dd><p>List of drone agents in the simulation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="#underwater_swarm.drone.Drone" title="underwater_swarm.drone.Drone">Drone</a>]</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.simulation.Simulation.controller">
 <span class="sig-name descname"><span class="pre">controller</span></span><a class="headerlink" href="#underwater_swarm.simulation.Simulation.controller" title="Link to this definition"></a></dt>
 <dd><p>Logic controller for swarm behaviors.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#underwater_swarm.swarm.SwarmController" title="underwater_swarm.swarm.SwarmController">SwarmController</a></p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.simulation.Simulation.environment">
 <span class="sig-name descname"><span class="pre">environment</span></span><a class="headerlink" href="#underwater_swarm.simulation.Simulation.environment" title="Link to this definition"></a></dt>
 <dd><p>Physical environment (bounds, obstacles).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#underwater_swarm.environment.Environment" title="underwater_swarm.environment.Environment">Environment</a></p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.simulation.Simulation.targets">
 <span class="sig-name descname"><span class="pre">targets</span></span><a class="headerlink" href="#underwater_swarm.simulation.Simulation.targets" title="Link to this definition"></a></dt>
 <dd><p>List of target positions (e.g., enemies).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[np.ndarray]</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.simulation.Simulation.friends">
 <span class="sig-name descname"><span class="pre">friends</span></span><a class="headerlink" href="#underwater_swarm.simulation.Simulation.friends" title="Link to this definition"></a></dt>
 <dd><p>List of friendly unit positions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[np.ndarray]</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.simulation.Simulation.mode">
 <span class="sig-name descname"><span class="pre">mode</span></span><a class="headerlink" href="#underwater_swarm.simulation.Simulation.mode" title="Link to this definition"></a></dt>
 <dd><p>Current operational mode of the swarm.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#underwater_swarm.config.SwarmMode" title="underwater_swarm.config.SwarmMode">SwarmMode</a></p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.simulation.Simulation.manual_target">
 <span class="sig-name descname"><span class="pre">manual_target</span></span><a class="headerlink" href="#underwater_swarm.simulation.Simulation.manual_target" title="Link to this definition"></a></dt>
 <dd><p>Flag indicating if targets are manually controlled.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="underwater_swarm.simulation.Simulation.history">
 <span class="sig-name descname"><span class="pre">history</span></span><a class="headerlink" href="#underwater_swarm.simulation.Simulation.history" title="Link to this definition"></a></dt>
 <dd><p>List of drone positions at each step for playback.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="underwater_swarm.simulation.Simulation.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_drones</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/simulation.html#Simulation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.simulation.Simulation.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the simulation.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>num_drones</strong> – Number of drones to spawn.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="underwater_swarm.simulation.Simulation.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/simulation.html#Simulation.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.simulation.Simulation.run" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#underwater_swarm.config.SwarmMode" title="underwater_swarm.config.SwarmMode"><span class="pre">SwarmMode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/simulation.html#Simulation.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.simulation.Simulation.run" title="Link to this definition"></a></dt>
 <dd><p>Runs the simulation for a specified number of steps.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>steps</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of steps to run. Defaults to STEPS.</p></li>
-<li><p><strong>mode</strong> (<a class="reference internal" href="#underwater_swarm.config.SwarmMode" title="underwater_swarm.config.SwarmMode"><em>SwarmMode</em></a><em>, </em><em>optional</em>) – Initial mode to set. Defaults to None.</p></li>
+<li><p><strong>steps</strong> – Number of steps to run.</p></li>
+<li><p><strong>mode</strong> – Initial mode to set.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>History of drone positions (steps, num_drones, 3).</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
+<dd class="field-even"><p>History of drone positions <code class="docutils literal notranslate"><span class="pre">(steps,</span> <span class="pre">num_drones,</span> <span class="pre">3)</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="underwater_swarm.simulation.Simulation.step">
-<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/simulation.html#Simulation.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.simulation.Simulation.step" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/simulation.html#Simulation.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.simulation.Simulation.step" title="Link to this definition"></a></dt>
 <dd><p>Advances the simulation by one time step.</p>
-<p>Updates target positions (if wandering), applies swarm logic via the
-controller, and integrates physics for all drones.</p>
 </dd></dl>
 
 </dd></dl>
@@ -679,28 +676,27 @@ controller, and integrates physics for all drones.</p>
 <section id="module-underwater_swarm.swarm">
 <span id="underwater-swarm-swarm-module"></span><h2>underwater_swarm.swarm module<a class="headerlink" href="#module-underwater_swarm.swarm" title="Link to this heading"></a></h2>
 <p>Implements the swarm intelligence logic.</p>
-<p>This module contains the <cite>SwarmController</cite> which now acts as the high-level
+<p>This module contains the <code class="docutils literal notranslate"><span class="pre">SwarmController</span></code> which acts as the high-level
 coordinator (Swarm Layer). It delegates the local force calculations to
-each <cite>Drone</cite> agent (Local Layer) while managing global states and mode transitions.</p>
+each <code class="docutils literal notranslate"><span class="pre">Drone</span></code> agent (Local Layer) while managing global states and mode
+transitions.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="underwater_swarm.swarm.SwarmController">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">underwater_swarm.swarm.</span></span><span class="sig-name descname"><span class="pre">SwarmController</span></span><a class="reference internal" href="_modules/underwater_swarm/swarm.html#SwarmController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.swarm.SwarmController" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">underwater_swarm.swarm.</span></span><span class="sig-name descname"><span class="pre">SwarmController</span></span><a class="reference internal" href="_modules/underwater_swarm/swarm.html#SwarmController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.swarm.SwarmController" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Manages the swarm behavior by coordinating individual drones.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="underwater_swarm.swarm.SwarmController.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drones</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">friends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SwarmMode.PATROL</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/swarm.html#SwarmController.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.swarm.SwarmController.update" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drones</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#underwater_swarm.drone.Drone" title="underwater_swarm.drone.Drone"><span class="pre">Drone</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#underwater_swarm.environment.Environment" title="underwater_swarm.environment.Environment"><span class="pre">Environment</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">np.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">friends</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">np.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#underwater_swarm.config.SwarmMode" title="underwater_swarm.config.SwarmMode"><span class="pre">SwarmMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SwarmMode.PATROL</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/underwater_swarm/swarm.html#SwarmController.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.swarm.SwarmController.update" title="Link to this definition"></a></dt>
 <dd><p>Updates all drones in the swarm.</p>
-<p>Iterates through each drone and triggers its local force calculation
-logic.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>drones</strong> (<em>list</em><em>[</em><a class="reference internal" href="#underwater_swarm.drone.Drone" title="underwater_swarm.drone.Drone"><em>Drone</em></a><em>]</em>) – List of drones to update.</p></li>
-<li><p><strong>environment</strong> (<a class="reference internal" href="#underwater_swarm.environment.Environment" title="underwater_swarm.environment.Environment"><em>Environment</em></a>) – The simulation environment.</p></li>
-<li><p><strong>targets</strong> (<em>list</em><em>[</em><em>np.ndarray</em><em>]</em>) – List of enemy/target positions.</p></li>
-<li><p><strong>friends</strong> (<em>list</em><em>[</em><em>np.ndarray</em><em>]</em>) – List of friendly unit positions.</p></li>
-<li><p><strong>mode</strong> (<a class="reference internal" href="#underwater_swarm.config.SwarmMode" title="underwater_swarm.config.SwarmMode"><em>SwarmMode</em></a><em>, </em><em>optional</em>) – Current behavior mode. Defaults to PATROL.</p></li>
+<li><p><strong>drones</strong> – List of drones to update.</p></li>
+<li><p><strong>environment</strong> – The simulation environment.</p></li>
+<li><p><strong>targets</strong> – List of enemy/target positions.</p></li>
+<li><p><strong>friends</strong> – List of friendly unit positions.</p></li>
+<li><p><strong>mode</strong> – Current behavior mode.</p></li>
 </ul>
 </dd>
 </dl>
@@ -717,8 +713,8 @@ It includes a live interactive visualizer (<cite>LiveVisualizer</cite>) and a le
 static animator (<cite>animate_swarm</cite>).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="underwater_swarm.viz.LiveVisualizer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">underwater_swarm.viz.</span></span><span class="sig-name descname"><span class="pre">LiveVisualizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/viz.html#LiveVisualizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.viz.LiveVisualizer" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">underwater_swarm.viz.</span></span><span class="sig-name descname"><span class="pre">LiveVisualizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/viz.html#LiveVisualizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.viz.LiveVisualizer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Interactive 3D visualizer for the simulation.</p>
 <p>Allows real-time interaction with the simulation, including changing modes,
 placing targets/obstacles, and adjusting view settings.</p>
@@ -805,7 +801,7 @@ placing targets/obstacles, and adjusting view settings.</p>
 <dd><p>List of line objects for depth visualization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -816,7 +812,7 @@ placing targets/obstacles, and adjusting view settings.</p>
 <dd><p>Flag for 2D/3D view toggle.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -827,7 +823,7 @@ placing targets/obstacles, and adjusting view settings.</p>
 <dd><p>Type of currently selected entity (‘enemy’, ‘friend’, ‘obstacle’).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -838,7 +834,18 @@ placing targets/obstacles, and adjusting view settings.</p>
 <dd><p>Index of currently selected entity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="underwater_swarm.viz.LiveVisualizer.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/underwater_swarm/viz.html#LiveVisualizer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#underwater_swarm.viz.LiveVisualizer.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the visualizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>simulation</strong> (<a class="reference internal" href="#underwater_swarm.simulation.Simulation" title="underwater_swarm.simulation.Simulation"><em>Simulation</em></a>) – The simulation instance to visualize.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -916,15 +923,28 @@ placing targets/obstacles, and adjusting view settings.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>history</strong> (<em>np.ndarray</em>) – Array of positions (steps, num_drones, 3).</p></li>
-<li><p><strong>interval</strong> (<em>int</em><em>, </em><em>optional</em>) – Frame interval in ms. Defaults to 50.</p></li>
+<li><p><strong>interval</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Frame interval in ms. Defaults to 50.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 </section>
-<section id="module-underwater_swarm">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-underwater_swarm" title="Link to this heading"></a></h2>
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<p>Underwater Drone Swarm Simulation package.</p>
+<p>This package provides a complete simulation framework for biomimetic
+underwater drone swarms, including:</p>
+<ul class="simple">
+<li><p><strong>config</strong>: Simulation parameters and swarm mode definitions.</p></li>
+<li><p><strong>drone</strong>: Individual drone agent with physics and force calculations.</p></li>
+<li><p><strong>environment</strong>: Ocean environment with currents and obstacles.</p></li>
+<li><p><strong>metrics</strong>: Performance monitoring (cohesion, alignment, safety).</p></li>
+<li><p><strong>safety</strong>: Geofencing and collision avoidance.</p></li>
+<li><p><strong>simulation</strong>: Main simulation loop orchestration.</p></li>
+<li><p><strong>swarm</strong>: Swarm-level coordination controller.</p></li>
+<li><p><strong>viz</strong>: Real-time 3D visualization tools.</p></li>
+</ul>
 </section>
 </section>
 
@@ -938,7 +958,7 @@ placing targets/obstacles, and adjusting view settings.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, CDagorn.</p>
+    <p>&#169; Copyright 2024-2026, CDagorn.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

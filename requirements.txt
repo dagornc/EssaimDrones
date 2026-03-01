@@ -3,3 +3,16 @@ matplotlib
 pytest
 sphinx
 sphinx_rtd_theme
+pydantic
+pyyaml
+pydantic-settings
+scipy
+langchain
+langgraph
+langchain-core
+langchain-openai
+fastapi[standard]
+websockets
+python-dotenv
+httpx
+aiosqlite

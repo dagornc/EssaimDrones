@@ -7,14 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>underwater_swarm.environment &mdash; EssaimDrones 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../_static/documentation_options.js?v=8d563738"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -69,15 +69,18 @@
            <div itemprop="articleBody">
              
   <h1>Source code for underwater_swarm.environment</h1><div class="highlight"><pre>
-<span></span>
-<span class="sd">&quot;&quot;&quot;Defines the simulation environment.</span>
+<span></span><span class="sd">&quot;&quot;&quot;Defines the simulation environment.</span>
 
 <span class="sd">This module manages the physical environment, including boundaries,</span>
 <span class="sd">currents (fluid dynamics), and obstacles.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">BOUNDS</span>
+
 
 <div class="viewcode-block" id="Obstacle">
 <a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.environment.Obstacle">[docs]</a>
@@ -85,12 +88,18 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a spherical obstacle in the environment.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        position (np.ndarray): 3D position of the obstacle center.</span>
-<span class="sd">        radius (float): Radius of the obstacle.</span>
+<span class="sd">        position: 3D position of the obstacle center.</span>
+<span class="sd">        radius: Radius of the obstacle.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">10.0</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">radius</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">position</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">radius</span></div>
+
 
 
 <div class="viewcode-block" id="Environment">
@@ -99,68 +108,68 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Manages the simulation environment parameters.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        bounds (np.ndarray): 3D vector defining the size of the environment box.</span>
-<span class="sd">        global_current (np.ndarray): Base vector for the global water current.</span>
-<span class="sd">        obstacles (list[Obstacle]): List of obstacles in the environment.</span>
+<span class="sd">        bounds: 3D vector defining the size of the environment box.</span>
+<span class="sd">        global_current: Base vector for the global water current.</span>
+<span class="sd">        obstacles: List of obstacles in the environment.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="n">BOUNDS</span>
-        <span class="c1"># Simple constant current for now, can be made complex later</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_current</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span> <span class="c1"># 0.5 m/s flow in X</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obstacles</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># List of Obstacle objects</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">BOUNDS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_current</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obstacles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Obstacle</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="Environment.add_obstacle">
 <a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.environment.Environment.add_obstacle">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_obstacle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">10.0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_obstacle</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">position</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a spherical obstacle to the environment.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            position (list or np.ndarray): Center position [x, y, z].</span>
-<span class="sd">            radius (float, optional): Radius of the obstacle. Defaults to 10.0.</span>
+<span class="sd">            position: Center position ``[x, y, z]``.</span>
+<span class="sd">            radius: Radius of the obstacle.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obstacles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Obstacle</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">radius</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="Environment.get_current">
 <a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.environment.Environment.get_current">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates the water current velocity at a specific position.</span>
 
 <span class="sd">        Combines the global base current with spatially varying turbulence.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            position (np.ndarray): Position to sample the current at.</span>
+<span class="sd">            position: Position to sample the current at.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            np.ndarray: 3D current velocity vector.</span>
+<span class="sd">            3D current velocity vector.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Base flow</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="n">flow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_current</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        
-        <span class="c1"># Add simple turbulence (sine wave based on position)</span>
+
         <span class="n">turbulence</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
             <span class="mf">0.0</span><span class="p">,</span>
-            <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">),</span>
-            <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">),</span>
+            <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">),</span>
         <span class="p">])</span>
-        
+
         <span class="k">return</span> <span class="n">flow</span> <span class="o">+</span> <span class="n">turbulence</span></div>
 
 
 <div class="viewcode-block" id="Environment.check_bounds">
 <a class="viewcode-back" href="../../underwater_swarm.html#underwater_swarm.environment.Environment.check_bounds">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">check_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if a position is within the environment bounds.</span>
 
 <span class="sd">        Note:</span>
-<span class="sd">            Currently a placeholder. Boundary enforcement is handled by</span>
-<span class="sd">            steering forces in the swarm logic.</span>
+<span class="sd">            Placeholder. Boundary enforcement is handled by steering forces.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            position (np.ndarray): Position to check.</span>
+<span class="sd">            position: Position to check.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># This will be handled by the drone/swarm logic to apply steering forces</span>
-        <span class="c1"># to stay inside, rather than hard bounces.</span>
         <span class="k">pass</span></div>
 </div>
 
@@ -173,7 +182,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, CDagorn.</p>
+    <p>&#169; Copyright 2024-2026, CDagorn.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
